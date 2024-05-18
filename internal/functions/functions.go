@@ -190,7 +190,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 		orderNumber := string(orderTmp)
 		flag, err = db.DataBaseCheckOrderExistance(orderNumber, token)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			w.WriteHeader(http.StatusInternalServerError)
 			_, err = io.WriteString(w, "Error on the side")
 			if err != nil {
 				log.Fatal(err)
@@ -207,7 +207,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 		}
 		err = db.DataBasePostOrder(orderNumber, token)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			w.WriteHeader(http.StatusGatewayTimeout)
 			_, err = io.WriteString(w, "Error on the side")
 			if err != nil {
 				log.Fatal(err)

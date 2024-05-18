@@ -262,10 +262,13 @@ func DataBaseCheckUserExistance(login string, password string) (flag int, tknm s
 	}
 	defer db.Close()
 	var token string
+	fmt.Println("inside1")
 	if err := db.QueryRow("SELECT token FROM users WHERE lgn = '" + string(login) + "' and psw = '" + string(password) + "';").Scan(&token); err != nil {
 		if err == sql.ErrNoRows {
+			fmt.Println("inside2")
 			return 0, "", nil
 		}
+		fmt.Println("inside3")
 		return 0, "", err
 	}
 	return 1, token, nil
@@ -658,7 +661,6 @@ func DataBaseOrdersBalls(orderNumber string, token string) (answ flw.WithAnsw, e
 		if rows.Err() != nil {
 			return answ, rows.Err()
 		}
-		break
 	}
 	return answ, nil
 
