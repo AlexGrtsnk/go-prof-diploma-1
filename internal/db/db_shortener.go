@@ -491,7 +491,9 @@ func DataBaseUserSumBalance(token string, balls float64, ordernum string) (err e
 		return err
 	}
 	quer = "UPDATE orders SET sumbals='" + fmt.Sprint(balls) + "' WHERE nmb = '" + ordernum + "';"
+
 	_, err = db.Exec(quer)
+	fmt.Println("ghjk ", balls, "UPDATE orders SET sumbals='"+fmt.Sprint(balls)+"' WHERE nmb = '"+ordernum+"';", err)
 	if err != nil {
 		return err
 	}
