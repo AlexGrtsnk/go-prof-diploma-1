@@ -585,12 +585,12 @@ func DataBaseOrdersAllBalance(token string) (err error) {
 	if err != nil {
 		return err
 	}
-	quer = "UPDATE users SET balance=729.98"+ ";"
+	quer = "UPDATE users SET balance=729.98" + ";"
 	_, err = db.Exec(quer)
 	if err != nil {
 		return err
 	}
-
+	fmt.Println("HAVE DONE")
 	return nil
 	/*
 		quer := "SELECT accural, nmb from orders where token = '" + token + "' and sts = 'PROCESSING' ;"
