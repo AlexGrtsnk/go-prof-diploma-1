@@ -190,6 +190,23 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
+		if flag == 3 {
+			w.WriteHeader(http.StatusAccepted)
+			fmt.Println("help1")
+			err = db.DataBasePostOrder(orderNumber, token)
+			fmt.Println("help2")
+			if err != nil {
+				w.WriteHeader(http.StatusGatewayTimeout)
+				_, err = io.WriteString(w, "Error on the side")
+				if err != nil {
+					log.Fatal(err)
+				}
+				return
+			}
+			fmt.Println("help3")
+			return
+		}
+
 		if flag == 1 {
 			w.WriteHeader(http.StatusOK)
 			return
@@ -198,19 +215,6 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusConflict)
 			return
 		}
-		w.WriteHeader(http.StatusAccepted)
-		fmt.Println("help1")
-		err = db.DataBasePostOrder(orderNumber, token)
-		fmt.Println("help2")
-		if err != nil {
-			w.WriteHeader(http.StatusGatewayTimeout)
-			_, err = io.WriteString(w, "Error on the side")
-			if err != nil {
-				log.Fatal(err)
-			}
-			return
-		}
-		fmt.Println("help3")
 		//w.WriteHeader(http.StatusProcessing)
 	}
 	if r.Method == http.MethodGet {
