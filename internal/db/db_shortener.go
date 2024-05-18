@@ -285,12 +285,15 @@ func DataBasePostUser(login string, password string, token string) (err error) {
 		return err
 	}
 	defer db.Close()
+	fmt.Println("inside11")
 	quer := `INSERT INTO users(lgn, psw, token) VALUES ('` + string(login) + `', '` + string(password) + `', '` + token + `')`
-
+	fmt.Println("inside12")
 	_, err = db.Exec(quer)
+	fmt.Println("inside13 ", err)
 	if err != nil {
 		return err
 	}
+	fmt.Println("inside14")
 	return nil
 }
 
