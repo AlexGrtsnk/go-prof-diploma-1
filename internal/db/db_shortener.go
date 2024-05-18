@@ -377,7 +377,7 @@ func DataBasePostOrder(orderNumber string, token string) (err error) {
 		return err
 	}
 	defer db.Close()
-	quer := `INSERT INTO orders(nmb, sts, token) VALUES ('` + string(orderNumber) + `', '` + string("Prinyat") + `', '` + token + `')`
+	quer := `INSERT INTO orders(nmb, sts, token) VALUES ('` + string(orderNumber) + `', '` + string("PROCESSING") + `', '` + token + `')`
 	_, err = db.Exec(quer)
 	if err != nil {
 		return err
