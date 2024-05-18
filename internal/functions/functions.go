@@ -553,6 +553,8 @@ func GetAllOrdersBalanceDropPage(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+	var tmp flw.DrawAnswList
+	tmp = append(tmp, answBatch[len(answBatch)-1])
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	if err = json.NewEncoder(w).Encode(answBatch); err != nil {
