@@ -252,6 +252,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 		token, err := cks.GetCookieHandler(w, r)
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
+			fmt.Println("writingheader1")
 			_, err = io.WriteString(w, "Error on the side")
 			if err != nil {
 				log.Fatal(err)
@@ -260,6 +261,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 		flag, err := db.DataBaseCheckAuth(token)
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
+			fmt.Println("writingheader2")
 			_, err = io.WriteString(w, "Error on the side")
 			if err != nil {
 				log.Fatal(err)
@@ -268,6 +270,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 		}
 		if flag == 0 {
 			w.WriteHeader(http.StatusUnauthorized)
+			fmt.Println("writingheader3")
 			_, err = io.WriteString(w, "Error on the side")
 			if err != nil {
 				log.Fatal(err)
@@ -280,6 +283,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 		var tmpNewOrdersList flw.OrdersList
 		fmt.Println("starting processing2", newOrdersList[0], err)
 		if err != nil {
+			fmt.Println("writingheader4")
 			w.WriteHeader(http.StatusBadRequest)
 			_, err = io.WriteString(w, "Error on the side")
 			if err != nil {
@@ -295,8 +299,8 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 		}
 		fmt.Println("jsonwentgood3")
 		tmpNewOrdersList = append(tmpNewOrdersList, newOrdersList[len(newOrdersList)-1])
-		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
 		if err = json.NewEncoder(w).Encode(tmpNewOrdersList); err != nil {
 			log.Panic(err)
 		}
