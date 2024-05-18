@@ -207,7 +207,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("i want to see uploaded number ", orderNumber)
 		i, _ := strconv.Atoi(orderNumber)
 		bl := Valid(i)
-		if bl {
+		if !bl {
 			w.WriteHeader(http.StatusUnprocessableEntity)
 			return
 		}
