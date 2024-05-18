@@ -585,7 +585,7 @@ func DataBaseOrdersAllBalance(token string) (err error) {
 	if err != nil {
 		return err
 	}
-	quer = "UPDATE users SET balance=729.98 WHERE token = '" + token + "';"
+	quer = "UPDATE users SET balance=729.98"+ "';"
 	_, err = db.Exec(quer)
 	if err != nil {
 		return err
