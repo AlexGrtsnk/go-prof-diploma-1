@@ -309,7 +309,7 @@ func DataBaseCheckAuth(token string) (falg int, err error) {
 	}
 	defer db.Close()
 	var login string
-	if err := db.QueryRow("SELECT login FROM users WHERE token = '" + string(token) + "';").Scan(&login); err != nil {
+	if err := db.QueryRow("SELECT lgn FROM users WHERE token = '" + string(token) + "';").Scan(&login); err != nil {
 		if err == sql.ErrNoRows {
 			return 0, nil
 		}

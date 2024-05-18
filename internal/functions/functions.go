@@ -159,6 +159,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 		}
 		fmt.Println("want smth", token)
 		flag, err := db.DataBaseCheckAuth(token)
+		fmt.Println("want smth", flag, err)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			_, err = io.WriteString(w, "Error on the side")
