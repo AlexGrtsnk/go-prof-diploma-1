@@ -181,6 +181,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 		orderNumber := string(orderTmp)
 		fmt.Println("i want to see uploaded number ", orderNumber)
 		flag, err = db.DataBaseCheckOrderExistance(orderNumber, token)
+		fmt.Println("checking ", flag, err)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			_, err = io.WriteString(w, "Error on the side")
