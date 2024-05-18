@@ -6,33 +6,33 @@ type Auth struct {
 }
 
 type Orders struct {
-	Number   string `json:"number"`
-	Status   string `json:"status"`
-	Accrual  int    `json:"accrual"`
-	Uoloaded string `json:"uploaded"`
+	Number   string  `json:"number"`
+	Status   string  `json:"status"`
+	Accrual  float64 `json:"accrual"`
+	Uoloaded string  `json:"uploaded"`
 }
 type OrdersList []Orders
 
 type UserAnsw struct {
-	Accural  int `json:"accural"`
-	Withdraw int `json:"withdrawn"`
+	Accural  float64 `json:"accural"`
+	Withdraw float64 `json:"withdrawn"`
 }
 
 type BalanceAnsw struct {
-	Order string `json:"order"`
-	Sum   int    `json:"sum"`
+	Order string  `json:"order"`
+	Sum   float64 `json:"sum"`
 }
 
 type DrawAnsw struct {
-	Number       string `json:"number"`
-	Sum          int    `json:"sum"`
-	ProccessedAt string `json:"processed_at"`
+	Number       string  `json:"number"`
+	Sum          float64 `json:"sum"`
+	ProccessedAt string  `json:"processed_at"`
 }
 
 type WithAnsw struct {
-	Order   string `json:"number"`
-	Status  string `json:"status"`
-	Accrual int    `json:"accrual"`
+	Order   string  `json:"number"`
+	Status  string  `json:"status"`
+	Accrual float64 `json:"accrual"`
 }
 
 type DrawAnswList []DrawAnsw

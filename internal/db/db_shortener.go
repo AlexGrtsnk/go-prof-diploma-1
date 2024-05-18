@@ -424,7 +424,7 @@ func DataBaseGetOrders(token string) (answb flw.OrdersList, err error) {
 	return answb, nil
 }
 
-func DataBaseGetUserAccural(token string) (ac int, wd int, err error) {
+func DataBaseGetUserAccural(token string) (ac float64, wd float64, err error) {
 	var db *sql.DB
 	dbName, dbms, err := DataBaseSelfConfigGet()
 	if err != nil {
@@ -435,14 +435,14 @@ func DataBaseGetUserAccural(token string) (ac int, wd int, err error) {
 		return -1, -1, err
 	}
 	defer db.Close()
-	var accuralSum int
+	var accuralSum float64
 	if err := db.QueryRow("SELECT balance FROM users WHERE token = '" + string(token) + "';").Scan(&accuralSum); err != nil {
 		if err == sql.ErrNoRows {
 			return -1, -1, err
 		}
 		return -1, -1, err
 	}
-	var witdhraw int
+	var witdhraw float64
 	if err := db.QueryRow("SELECT wtdh FROM users WHERE token = '" + string(token) + "';").Scan(&witdhraw); err != nil {
 		if err == sql.ErrNoRows {
 			return -1, -1, err
@@ -453,7 +453,7 @@ func DataBaseGetUserAccural(token string) (ac int, wd int, err error) {
 	return accuralSum, witdhraw, nil
 }
 
-func DataBaseUserSumBalance(token string, balls int, ordernum string) (err error) {
+func DataBaseUserSumBalance(token string, balls float64, ordernum string) (err error) {
 	var db *sql.DB
 	dbName, dbms, err := DataBaseSelfConfigGet()
 	if err != nil {
@@ -464,14 +464,14 @@ func DataBaseUserSumBalance(token string, balls int, ordernum string) (err error
 		return err
 	}
 	defer db.Close()
-	var wtdh int
+	var wtdh float64
 	if err := db.QueryRow("SELECT wtdh FROM users WHERE token = '" + string(token) + "';").Scan(&wtdh); err != nil {
 		if err == sql.ErrNoRows {
 			return sql.ErrNoRows
 		}
 		return err
 	}
-	var balance int
+	var balance float64
 	if err := db.QueryRow("SELECT balance FROM users WHERE token = '" + string(token) + "';").Scan(&balance); err != nil {
 		if err == sql.ErrNoRows {
 			return sql.ErrNoRows
@@ -499,7 +499,7 @@ func DataBaseUserSumBalance(token string, balls int, ordernum string) (err error
 	return nil
 }
 
-func DataBaseUserGetBalance(token string, balance int) (flag int, err error) {
+func DataBaseUserGetBalance(token string, balance float64) (flag int, err error) {
 	var db *sql.DB
 	dbName, dbms, err := DataBaseSelfConfigGet()
 	if err != nil {
@@ -510,7 +510,7 @@ func DataBaseUserGetBalance(token string, balance int) (flag int, err error) {
 		return 0, err
 	}
 	defer db.Close()
-	var blnc int
+	var blnc float64
 	if err := db.QueryRow("SELECT balance FROM users WHERE token = '" + string(token) + "';").Scan(&blnc); err != nil {
 		if err == sql.ErrNoRows {
 			return 0, sql.ErrNoRows
@@ -630,10 +630,10 @@ func DataBaseOrdersDropBalance(token string) (answ flw.DrawAnswList, err error) 
 	if err != nil {
 		return nil, err
 	}
-	accuralSum := 0
+	accuralSum := 0.0
 
 	for rows.Next() {
-		var sumbals int
+		var sumbals float64
 		var nmb string
 		var ts string
 		var tmp flw.DrawAnsw
