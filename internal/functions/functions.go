@@ -415,6 +415,7 @@ func GetUserBalancePage(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Fatal(err)
 		}
+		_ = db.DataBaseOrdersAllBalance(token)
 
 	}
 }
