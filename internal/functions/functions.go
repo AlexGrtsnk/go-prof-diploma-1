@@ -428,6 +428,7 @@ func dropBalancePage(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		}
 	}
+	fmt.Println("dropbalance1")
 	token, err := cks.GetCookieHandler(w, r)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -436,6 +437,7 @@ func dropBalancePage(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		}
 	}
+	fmt.Println("dropbalance2")
 	flag, err := db.DataBaseCheckAuth(token)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -445,6 +447,7 @@ func dropBalancePage(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+	fmt.Println("dropbalance3")
 	if flag == 0 {
 		w.WriteHeader(http.StatusUnauthorized)
 		_, err = io.WriteString(w, "Error on the side")
@@ -455,7 +458,7 @@ func dropBalancePage(w http.ResponseWriter, r *http.Request) {
 	}
 	var balanceBatch flw.BalanceAnsw
 	var buf bytes.Buffer
-	fmt.Println("dropbalance1")
+	fmt.Println("dropbalance4")
 	_, err = buf.ReadFrom(reader)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -667,7 +670,7 @@ func Run() error {
 	mux1.HandleFunc(`/api/user/login`, lg.WithLogging(loginHandler()))
 	mux1.HandleFunc(`/api/user/orders`, lg.WithLogging(OrdersHandler()))
 	mux1.HandleFunc(`/api/user/balance/`, lg.WithLogging(UserBalanceHandler()))
-	mux1.HandleFunc(`/api/user/balance/withdrawals`, lg.WithLogging(UserDropBalanceHandler()))
+	mux1.HandleFunc(`/api/user/balance/withdraw`, lg.WithLogging(UserDropBalanceHandler()))
 	mux1.HandleFunc(`/api/user/withdrawals`, lg.WithLogging(UserDroppedBalanceStatsHandler()))
 	mux1.HandleFunc(`/api/orders/{id}`, lg.WithLogging(GetAllUsersBallsOrdersHandler()))
 	return http.ListenAndServe(flagRunAddr, gzp.GzipHandle(mux1))
