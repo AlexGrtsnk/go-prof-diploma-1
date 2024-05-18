@@ -668,17 +668,17 @@ func DataBaseOrdersDropBalance(token string) (answ flw.DrawAnswList, err error) 
 		}
 		if sumbals > 0 {
 			accuralSum += sumbals
-			tmp.Number = nmb
+			tmp.Order = nmb
 			tmp.Sum = sumbals
 			tmp.ProccessedAt = ts
 			answ = append(answ, tmp)
 		}
-		fmt.Println("drpansw ", answ[0].Number, answ[0].ProccessedAt, answ[0].Sum)
+		fmt.Println("drpansw ", answ[0].Order, answ[0].ProccessedAt, answ[0].Sum)
 	}
 	if accuralSum == 0 {
 		return nil, sql.ErrNoRows
 	}
-	fmt.Println("drpansw3 ", answ[0].Number, answ[0].ProccessedAt, answ[0].Sum)
+	fmt.Println("drpansw3 ", answ[0].Order, answ[0].ProccessedAt, answ[0].Sum)
 	return answ, nil
 }
 

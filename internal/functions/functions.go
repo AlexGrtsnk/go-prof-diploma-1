@@ -542,7 +542,7 @@ func GetAllOrdersBalanceDropPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	answBatch, err := db.DataBaseOrdersDropBalance(token)
-	fmt.Println("drpansw12 ", answBatch[0].Number, answBatch[0].ProccessedAt, answBatch[0].Sum)
+	fmt.Println("drpansw12 ", answBatch[0].Order, answBatch[0].ProccessedAt, answBatch[0].Sum)
 	if err == sql.ErrNoRows {
 		w.WriteHeader(http.StatusNoContent)
 		return
@@ -551,7 +551,7 @@ func GetAllOrdersBalanceDropPage(w http.ResponseWriter, r *http.Request) {
 	tmp = append(tmp, answBatch[len(answBatch)-1])
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
-	if err = json.NewEncoder(w).Encode(tmp[0]); err != nil {
+	if err = json.NewEncoder(w).Encode(tmp); err != nil {
 		log.Panic(err)
 	}
 	fmt.Println("MUST DONE")

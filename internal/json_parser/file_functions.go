@@ -24,7 +24,7 @@ type BalanceAnsw struct {
 }
 
 type DrawAnsw struct {
-	Number       string  `json:"number"`
+	Order        string  `json:"order"`
 	Sum          float64 `json:"sum"`
 	ProccessedAt string  `json:"processed_at"`
 }
