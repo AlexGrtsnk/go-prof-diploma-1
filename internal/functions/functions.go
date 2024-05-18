@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"math/rand"
 	"net/http"
 
 	apcfg "github.com/AlexGrtsnk/go-prof-diploma-1/internal/app_config"
@@ -23,17 +22,6 @@ import (
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 )
-
-func generateShortKey() string {
-	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	const keyLength = 6
-
-	shortKey := make([]byte, keyLength)
-	for i := range shortKey {
-		shortKey[i] = charset[rand.Intn(len(charset))]
-	}
-	return string(shortKey)
-}
 
 // аутентификация доне в теории
 func registrateNewUserPage(w http.ResponseWriter, r *http.Request) {
@@ -188,6 +176,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 		}
 		orderTmp, _ := io.ReadAll(r.Body)
 		orderNumber := string(orderTmp)
+		fmt.Println("i want to see uploaded number ", orderNumber)
 		flag, err = db.DataBaseCheckOrderExistance(orderNumber, token)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
