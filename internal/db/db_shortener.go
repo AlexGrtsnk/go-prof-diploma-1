@@ -341,7 +341,7 @@ func DataBaseCheckOrderExistance(orderNumber string, token string) (flag int, er
 			return 0, err
 		}
 	}
-	fmt.Println("Before2", sts)
+	fmt.Println("Before2", "SELECT sts FROM orders WHERE nmb = '"+string(orderNumber)+"' and token <> '"+string(token)+"';")
 	if err := db.QueryRow("SELECT sts FROM orders WHERE nmb = '" + string(orderNumber) + "' and token <> '" + string(token) + "';").Scan(&sts); err != nil {
 		if err == sql.ErrNoRows {
 			flagNEQ = 1
@@ -349,6 +349,7 @@ func DataBaseCheckOrderExistance(orderNumber string, token string) (flag int, er
 			return 0, err
 		}
 	}
+	fmt.Println("this is flag ", flagEQ, flagNEQ)
 	if flagEQ == 1 && flagNEQ == 1 {
 		return 3, nil
 	}
