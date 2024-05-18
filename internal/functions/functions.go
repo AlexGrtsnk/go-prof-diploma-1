@@ -551,7 +551,7 @@ func GetAllOrdersBalanceDropPage(w http.ResponseWriter, r *http.Request) {
 	tmp = append(tmp, answBatch[len(answBatch)-1])
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
-	if err = json.NewEncoder(w).Encode(tmp); err != nil {
+	if err = json.NewEncoder(w).Encode(answBatch); err != nil {
 		log.Panic(err)
 	}
 	fmt.Println("MUST DONE")
