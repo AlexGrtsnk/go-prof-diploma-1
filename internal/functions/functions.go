@@ -248,7 +248,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 		//var newOrderItems flw.Ord
 		fmt.Println("starting processing1")
 		newOrdersList, err := db.DataBaseGetOrders(token)
-		fmt.Println("starting processing2")
+		fmt.Println("starting processing2", newOrdersList[0], err)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			_, err = io.WriteString(w, "Error on the side")
