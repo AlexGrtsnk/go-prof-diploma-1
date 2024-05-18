@@ -546,7 +546,6 @@ func GetAllOrdersBalanceDropPage(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
-
 	var tmp flw.DrawAnswList
 	tmp = append(tmp, answBatch[len(answBatch)-1])
 	w.WriteHeader(http.StatusOK)

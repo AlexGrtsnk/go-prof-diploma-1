@@ -575,7 +575,7 @@ func DataBaseOrdersAllBalance(token string) (err error) {
 		return err
 	}
 	defer db.Close()
-	quer := "SELECT accural, nmb from orders where token = '" + token + "' and sts = 'PROCESSED' ;"
+	quer := "SELECT accural, nmb from orders where token = '" + token + "' and sts = 'PROCESSING' ;"
 	rows, err := db.Query(quer)
 	if err != nil {
 		return err
@@ -600,7 +600,7 @@ func DataBaseOrdersAllBalance(token string) (err error) {
 		}
 		flag = 1
 		accuralSum += tmp
-		quer = "UPDATE orders SET sts='COMPLETED' WHERE nmb = '" + nmb + "';"
+		quer = "UPDATE orders SET sts='PROCESSED' WHERE nmb = '" + nmb + "';"
 		_, err = db.Exec(quer)
 		if err != nil {
 			return err
