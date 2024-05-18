@@ -480,11 +480,13 @@ func dropBalancePage(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+	fmt.Println("sropbalance1 ", flag, err)
 	if flag == 2 {
 		w.WriteHeader(http.StatusFailedDependency)
 		return
 	}
 	flag, err = db.DataBaseUserGetBalance(token, balanceBatch.Sum)
+	fmt.Println("sropbalance2 ", flag, err)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		_, err = io.WriteString(w, "Error on the side")
@@ -498,6 +500,7 @@ func dropBalancePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err = db.DataBaseUserSumBalance(token, balanceBatch.Sum, balanceBatch.Order)
+	fmt.Println("sropbalance3 ", flag, err)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		_, err = io.WriteString(w, "Error on the side")
