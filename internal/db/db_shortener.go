@@ -332,12 +332,14 @@ func DataBaseCheckOrderExistance(orderNumber string, token string) (flag int, er
 	defer db.Close()
 	var sts string
 	flag = 1
+	fmt.Println("Before1")
 	if err := db.QueryRow("SELECT sts FROM orders WHERE nmb = '" + string(orderNumber) + "' and token = '" + string(token) + "';").Scan(&sts); err != nil {
 		if err == sql.ErrNoRows {
 			flag = 2
 		}
 		return 0, err
 	}
+	fmt.Println("Before2", sts)
 	if flag == 1 {
 		return 1, nil
 	}
@@ -347,6 +349,7 @@ func DataBaseCheckOrderExistance(orderNumber string, token string) (flag int, er
 		}
 		return 0, err
 	}
+	fmt.Println("Before3")
 	return 2, nil
 
 }
