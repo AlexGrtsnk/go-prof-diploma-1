@@ -607,6 +607,7 @@ func GetAllUsersBallsOrders(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
+		fmt.Println("qwerty ", flag, err, orderNumber)
 		if flag == 3 {
 			w.WriteHeader(http.StatusNoContent)
 			return
