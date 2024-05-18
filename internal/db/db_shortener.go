@@ -638,6 +638,7 @@ func DataBaseOrdersDropBalance(token string) (answ flw.DrawAnswList, err error) 
 		var ts string
 		var tmp flw.DrawAnsw
 		err = rows.Scan(&nmb, &sumbals, &ts)
+		fmt.Println("yuiop ", nmb, sumbals, ts)
 		if err != nil {
 			return nil, err
 		}
