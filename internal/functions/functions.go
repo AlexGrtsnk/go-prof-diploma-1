@@ -288,15 +288,19 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
+		fmt.Println("jsonwentgood2")
+
 		if err == sql.ErrNoRows {
 			w.WriteHeader(http.StatusNoContent)
 			return
 		}
+		fmt.Println("jsonwentgood3")
 		tmpNewOrdersList = append(tmpNewOrdersList, newOrdersList[len(newOrdersList)-1])
 		w.WriteHeader(http.StatusOK)
 		if err = json.NewEncoder(w).Encode(tmpNewOrdersList); err != nil {
 			log.Panic(err)
 		}
+		fmt.Println("jsonwentgood4")
 	}
 
 }
