@@ -575,46 +575,55 @@ func DataBaseOrdersAllBalance(token string) (err error) {
 		return err
 	}
 	defer db.Close()
-	quer := "SELECT accural, nmb from orders where token = '" + token + "' and sts = 'PROCESSING' ;"
-	rows, err := db.Query(quer)
-	if err != nil {
-		return err
-	}
-	flag := 0
-	accuralSum := 0
-	for rows.Next() {
-		//answ := new(flw.Orders)
-		var tmp int
-		var nmb string
-		err = rows.Scan(&tmp, &nmb)
-		if err != nil {
-			return err
-		}
-		if rows.Err() != nil {
-			return rows.Err()
-		}
-		//answ.ShortURL = apiRunAddr + "/" + answ.ShortURL
-		//answb = append(answb, *answ)
-		if tmp == -1 {
-			continue
-		}
-		flag = 1
-		accuralSum += tmp
-		quer = "UPDATE orders SET sts='PROCESSED' WHERE nmb = '" + nmb + "';"
-		_, err = db.Exec(quer)
-		if err != nil {
-			return err
-		}
-	}
-	if flag == 0 {
-		return sql.ErrNoRows
-	}
-	quer = "UPDATE users SET balance='" + fmt.Sprint(accuralSum) + "' WHERE token = '" + token + "';"
+	quer := "UPDATE orders SET sts='PROCESSED' WHERE token = '" + token + "';"
 	_, err = db.Exec(quer)
 	if err != nil {
 		return err
 	}
 	return nil
+
+	/*
+		quer := "SELECT accural, nmb from orders where token = '" + token + "' and sts = 'PROCESSING' ;"
+		rows, err := db.Query(quer)
+		if err != nil {
+			return err
+		}
+		flag := 0
+		accuralSum := 0
+		for rows.Next() {
+			//answ := new(flw.Orders)
+			var tmp int
+			var nmb string
+			err = rows.Scan(&tmp, &nmb)
+			if err != nil {
+				return err
+			}
+			if rows.Err() != nil {
+				return rows.Err()
+			}
+			//answ.ShortURL = apiRunAddr + "/" + answ.ShortURL
+			//answb = append(answb, *answ)
+			if tmp == -1 {
+				continue
+			}
+			flag = 1
+			accuralSum += tmp
+			quer = "UPDATE orders SET sts='PROCESSED' WHERE nmb = '" + nmb + "';"
+			_, err = db.Exec(quer)
+			if err != nil {
+				return err
+			}
+		}
+		if flag == 0 {
+			return sql.ErrNoRows
+		}
+		quer = "UPDATE users SET balance='" + fmt.Sprint(accuralSum) + "' WHERE token = '" + token + "';"
+		_, err = db.Exec(quer)
+		if err != nil {
+			return err
+		}
+		return nil
+	*/
 }
 
 func DataBaseOrdersDropBalance(token string) (answ flw.DrawAnswList, err error) {

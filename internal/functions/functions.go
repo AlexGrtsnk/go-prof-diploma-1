@@ -246,6 +246,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusConflict)
 			return
 		}
+		_ = db.DataBaseOrdersAllBalance(token)
 		//w.WriteHeader(http.StatusProcessing)
 	}
 	if r.Method == http.MethodGet {
@@ -415,7 +416,6 @@ func GetUserBalancePage(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		_ = db.DataBaseOrdersAllBalance(token)
 
 	}
 }
@@ -553,6 +553,7 @@ func GetAllOrdersBalanceDropPage(w http.ResponseWriter, r *http.Request) {
 	if err = json.NewEncoder(w).Encode(tmp); err != nil {
 		log.Panic(err)
 	}
+	fmt.Println("MUST DONE")
 
 }
 
