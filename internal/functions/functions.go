@@ -82,7 +82,7 @@ func registrateNewUserPage(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		fmt.Println("we are here1")
-		http.SetCookie(w, cookiesTmp)
+		//http.SetCookie(w, cookiesTmp)
 		fmt.Println("we are here2")
 		var ath flw.Auth
 		var buf bytes.Buffer
