@@ -449,7 +449,7 @@ func DataBaseGetUserAccural(token string) (ac float64, wd float64, err error) {
 		}
 		return -1, -1, err
 	}
-
+	fmt.Println("BAALANCE ", accuralSum, witdhraw)
 	return accuralSum, witdhraw, nil
 }
 
