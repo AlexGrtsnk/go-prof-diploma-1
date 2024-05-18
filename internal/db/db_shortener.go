@@ -331,32 +331,35 @@ func DataBaseCheckOrderExistance(orderNumber string, token string) (flag int, er
 	}
 	defer db.Close()
 	var sts string
-	flag = 1
-	flag_tmp := 0
+	flagEQ := 0
+	flagNEQ := 0
 	fmt.Println("Before1")
 	if err := db.QueryRow("SELECT sts FROM orders WHERE nmb = '" + string(orderNumber) + "' and token = '" + string(token) + "';").Scan(&sts); err != nil {
 		if err == sql.ErrNoRows {
-			flag = 2
+			flagEQ = 1
 		} else {
 			return 0, err
 		}
 	}
 	fmt.Println("Before2", sts)
-	if err := db.QueryRow("SELECT sts FROM orders WHERE nmb = '" + string(orderNumber) + "';").Scan(&sts); err != nil {
+	if err := db.QueryRow("SELECT sts FROM orders WHERE nmb = '" + string(orderNumber) + "' and token <> '" + string(token) + "';").Scan(&sts); err != nil {
 		if err == sql.ErrNoRows {
-			flag_tmp = 3
-			if flag == 2 {
-				return 3, nil
-			}
+			flagNEQ = 1
 		} else {
 			return 0, err
 		}
 	}
-	if flag_tmp == 3 && flag == 1 {
-		return 1, err
+	if flagEQ == 1 && flagNEQ == 1 {
+		return 3, nil
 	}
-	if flag_tmp == 0 && flag == 2 {
-		return 2, err
+	if flagEQ == 1 && flagNEQ == 0 {
+		return 2, nil
+	}
+	if flagEQ == 0 && flagNEQ == 1 {
+		return 1, nil
+	}
+	if flagEQ == 0 && flagNEQ == 0 {
+		return 2, nil
 	}
 	return flag, nil
 
