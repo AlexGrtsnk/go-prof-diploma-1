@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 
 	apcfg "github.com/AlexGrtsnk/go-prof-diploma-1/internal/app_config"
 	ath "github.com/AlexGrtsnk/go-prof-diploma-1/internal/authentification"
@@ -22,6 +23,29 @@ import (
 	"github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 )
+
+func Valid(number int) bool {
+	return (number%10+checksum(number/10))%10 == 0
+}
+
+func checksum(number int) int {
+	var luhn int
+
+	for i := 0; number > 0; i++ {
+		cur := number % 10
+
+		if i%2 == 0 { // even
+			cur = cur * 2
+			if cur > 9 {
+				cur = cur%10 + cur/10
+			}
+		}
+
+		luhn += cur
+		number = number / 10
+	}
+	return luhn % 10
+}
 
 // аутентификация доне в теории
 func registrateNewUserPage(w http.ResponseWriter, r *http.Request) {
@@ -181,6 +205,12 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 		orderTmp, _ := io.ReadAll(r.Body)
 		orderNumber := string(orderTmp)
 		fmt.Println("i want to see uploaded number ", orderNumber)
+		i, _ := strconv.Atoi(orderNumber)
+		bl := Valid(i)
+		if bl {
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			return
+		}
 		flag, err = db.DataBaseCheckOrderExistance(orderNumber, token)
 		fmt.Println("checking ", flag, err)
 		if err != nil {
