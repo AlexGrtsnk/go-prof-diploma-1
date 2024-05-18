@@ -246,7 +246,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusConflict)
 			return
 		}
-		_ = db.DataBaseOrdersAllBalance(token)
+		//_ = db.DataBaseOrdersAllBalance(token)
 		//w.WriteHeader(http.StatusProcessing)
 	}
 	if r.Method == http.MethodGet {
