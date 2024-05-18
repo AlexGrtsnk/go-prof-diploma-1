@@ -607,7 +607,7 @@ func GetAllUsersBallsOrders(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
-		if flag == 2 {
+		if flag == 3 {
 			w.WriteHeader(http.StatusNoContent)
 			return
 		}
