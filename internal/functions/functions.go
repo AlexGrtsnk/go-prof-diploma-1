@@ -249,7 +249,6 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 		//w.WriteHeader(http.StatusProcessing)
 	}
 	if r.Method == http.MethodGet {
-		w.Header().Set("Content-Type", "application/json")
 		token, err := cks.GetCookieHandler(w, r)
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
@@ -297,6 +296,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("jsonwentgood3")
 		tmpNewOrdersList = append(tmpNewOrdersList, newOrdersList[len(newOrdersList)-1])
 		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
 		if err = json.NewEncoder(w).Encode(tmpNewOrdersList); err != nil {
 			log.Panic(err)
 		}
