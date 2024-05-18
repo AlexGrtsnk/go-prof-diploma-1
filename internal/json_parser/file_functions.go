@@ -14,7 +14,7 @@ type Orders struct {
 type OrdersList []Orders
 
 type UserAnsw struct {
-	Accural  float64 `json:"accural"`
+	Current  float64 `json:"Current"`
 	Withdraw float64 `json:"withdrawn"`
 }
 

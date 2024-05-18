@@ -404,7 +404,7 @@ func GetUserBalancePage(w http.ResponseWriter, r *http.Request) {
 		}
 
 		var answ flw.UserAnsw
-		answ.Accural = accural
+		answ.Current = accural
 		answ.Withdraw = withdraw
 		resp, err := json.Marshal(answ)
 		if err != nil {
