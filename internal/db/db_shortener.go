@@ -352,12 +352,13 @@ func DataBaseCheckOrderExistance(orderNumber string, token string) (flag int, er
 			return 0, err
 		}
 	}
-	if flag_tmp != 0 {
+	if flag_tmp == 3 && flag == 1 {
 		return 1, err
-	} else {
+	}
+	if flag_tmp == 0 && flag == 2 {
 		return 2, err
 	}
-	//return flag, nil
+	return flag, nil
 
 }
 
