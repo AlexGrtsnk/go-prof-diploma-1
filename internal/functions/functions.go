@@ -279,7 +279,6 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		//var newOrderItems flw.Ord
-		_ = db.DataBaseOrdersAllBalance(token)
 		fmt.Println("starting processing1")
 		newOrdersList, err := db.DataBaseGetOrders(token)
 		var tmpNewOrdersList flw.OrdersList
@@ -308,6 +307,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			log.Panic(err)
 		}
 		fmt.Println("jsonwentgood4")
+		_ = db.DataBaseOrdersAllBalance(token)
 	}
 
 }
