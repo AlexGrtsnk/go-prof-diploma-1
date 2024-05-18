@@ -540,6 +540,7 @@ func GetAllOrdersBalanceDropPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	answBatch, err := db.DataBaseOrdersDropBalance(token)
+	fmt.Println("drpansw12 ", answBatch[0].Number, answBatch[0].ProccessedAt, answBatch[0].Sum)
 	if err == sql.ErrNoRows {
 		w.WriteHeader(http.StatusNoContent)
 		return

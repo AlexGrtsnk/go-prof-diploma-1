@@ -654,10 +654,12 @@ func DataBaseOrdersDropBalance(token string) (answ flw.DrawAnswList, err error) 
 			tmp.ProccessedAt = ts
 			answ = append(answ, tmp)
 		}
+		fmt.Println("drpansw ", answ[0].Number, answ[0].ProccessedAt, answ[0].Sum)
 	}
 	if accuralSum == 0 {
 		return nil, sql.ErrNoRows
 	}
+	fmt.Println("drpansw3 ", answ[0].Number, answ[0].ProccessedAt, answ[0].Sum)
 	return answ, nil
 }
 
