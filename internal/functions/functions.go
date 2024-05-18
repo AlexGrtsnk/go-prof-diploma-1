@@ -248,6 +248,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 		//var newOrderItems flw.Ord
 		fmt.Println("starting processing1")
 		newOrdersList, err := db.DataBaseGetOrders(token)
+		var tmpNewOrdersList flw.OrdersList
 		fmt.Println("starting processing2", newOrdersList[0], err)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -261,8 +262,9 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNoContent)
 			return
 		}
+		tmpNewOrdersList = append(tmpNewOrdersList, newOrdersList[len(newOrdersList)-1])
 		w.WriteHeader(http.StatusOK)
-		if err = json.NewEncoder(w).Encode(newOrdersList); err != nil {
+		if err = json.NewEncoder(w).Encode(tmpNewOrdersList); err != nil {
 			log.Panic(err)
 		}
 	}
