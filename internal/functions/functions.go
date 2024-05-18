@@ -461,10 +461,12 @@ func dropBalancePage(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("dropbalance4")
 	_, err = buf.ReadFrom(reader)
 	if err != nil {
+		fmt.Println("dropbalancerr ", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	if err = json.Unmarshal(buf.Bytes(), &balanceBatch); err != nil {
+		fmt.Println("dropbalancerr ", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
