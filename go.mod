@@ -1,6 +1,6 @@
 module github.com/AlexGrtsnk/go-prof-diploma-1
 
-go 1.22.1
+go 1.21.10
 
 require (
 	github.com/caarlos0/env v3.5.0+incompatible
