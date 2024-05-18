@@ -149,6 +149,7 @@ func authentificateUserPage(w http.ResponseWriter, r *http.Request) {
 // dopisat proverky algoritm luna
 func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
+
 		token, err := cks.GetCookieHandler(w, r)
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
@@ -218,6 +219,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 		//w.WriteHeader(http.StatusProcessing)
 	}
 	if r.Method == http.MethodGet {
+		w.Header().Set("Content-Type", "application/json")
 		token, err := cks.GetCookieHandler(w, r)
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
@@ -244,7 +246,9 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		//var newOrderItems flw.Ord
+		fmt.Println("starting processing1")
 		newOrdersList, err := db.DataBaseGetOrders(token)
+		fmt.Println("starting processing2")
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			_, err = io.WriteString(w, "Error on the side")
@@ -258,7 +262,6 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "application/json")
 		if err = json.NewEncoder(w).Encode(newOrdersList); err != nil {
 			log.Panic(err)
 		}

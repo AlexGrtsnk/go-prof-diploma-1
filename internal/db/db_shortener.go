@@ -396,11 +396,13 @@ func DataBaseGetOrders(token string) (answb flw.OrdersList, err error) {
 		return nil, err
 	}
 	defer db.Close()
+	fmt.Println("starting processing3")
 	quer := "SELECT nmb, sts, accural, ts from orders where token = '" + token + "';"
 	rows, err := db.Query(quer)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println("starting processing4")
 	flag := 0
 	for rows.Next() {
 		answ := new(flw.Orders)
@@ -413,6 +415,7 @@ func DataBaseGetOrders(token string) (answb flw.OrdersList, err error) {
 		}
 		//answ.ShortURL = apiRunAddr + "/" + answ.ShortURL
 		answb = append(answb, *answ)
+		fmt.Println("starting processing67", flag)
 		flag = 1
 	}
 	if flag == 0 {
