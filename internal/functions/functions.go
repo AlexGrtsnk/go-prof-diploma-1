@@ -546,14 +546,7 @@ func GetAllOrdersBalanceDropPage(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		_, err = io.WriteString(w, "Error on the side")
-		if err != nil {
-			log.Fatal(err)
-		}
-		return
-	}
+
 	var tmp flw.DrawAnswList
 	tmp = append(tmp, answBatch[len(answBatch)-1])
 	w.WriteHeader(http.StatusOK)
