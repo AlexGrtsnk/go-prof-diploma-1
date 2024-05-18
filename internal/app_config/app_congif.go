@@ -11,6 +11,7 @@ type Config struct {
 	RunAddress           string `env:"RUN_ADDRESS"`
 }
 
+// smth
 func ParseFlags() (a string, b string, f string) {
 	var flagRunAddr string
 	var fileName string
