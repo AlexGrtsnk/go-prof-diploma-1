@@ -674,7 +674,7 @@ func Run() error {
 	mux1.HandleFunc(`/api/user/register`, lg.WithLogging(restrationHandler()))
 	mux1.HandleFunc(`/api/user/login`, lg.WithLogging(loginHandler()))
 	mux1.HandleFunc(`/api/user/orders`, lg.WithLogging(OrdersHandler()))
-	mux1.HandleFunc(`/api/user/balance/`, lg.WithLogging(UserBalanceHandler()))
+	mux1.HandleFunc(`/api/user/balance`, lg.WithLogging(UserBalanceHandler()))
 	mux1.HandleFunc(`/api/user/balance/withdraw`, lg.WithLogging(UserDropBalanceHandler()))
 	mux1.HandleFunc(`/api/user/withdrawals`, lg.WithLogging(UserDroppedBalanceStatsHandler()))
 	mux1.HandleFunc(`/api/orders/{id}`, lg.WithLogging(GetAllUsersBallsOrdersHandler()))
