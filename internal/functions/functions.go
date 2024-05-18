@@ -198,7 +198,10 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusConflict)
 			return
 		}
+		w.WriteHeader(http.StatusAccepted)
+		fmt.Println("help1")
 		err = db.DataBasePostOrder(orderNumber, token)
+		fmt.Println("help2")
 		if err != nil {
 			w.WriteHeader(http.StatusGatewayTimeout)
 			_, err = io.WriteString(w, "Error on the side")
@@ -207,7 +210,8 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
-		w.WriteHeader(http.StatusProcessing)
+		fmt.Println("help3")
+		//w.WriteHeader(http.StatusProcessing)
 	}
 	if r.Method == http.MethodGet {
 		token, err := cks.GetCookieHandler(w, r)
