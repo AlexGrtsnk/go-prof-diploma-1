@@ -295,6 +295,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 
 		if err == sql.ErrNoRows {
 			w.WriteHeader(http.StatusNoContent)
+			fmt.Println("writingheader4")
 			return
 		}
 		fmt.Println("jsonwentgood3")
@@ -454,6 +455,7 @@ func dropBalancePage(w http.ResponseWriter, r *http.Request) {
 	}
 	var balanceBatch flw.BalanceAnsw
 	var buf bytes.Buffer
+	fmt.Println("dropbalance1")
 	_, err = buf.ReadFrom(reader)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -463,6 +465,7 @@ func dropBalancePage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	fmt.Println("sropbalance ", balanceBatch.Order, balanceBatch.Sum)
 	flag, err = db.DataBaseCheckOrderExistance(balanceBatch.Order, token)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
