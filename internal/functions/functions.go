@@ -157,6 +157,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 				log.Fatal(err)
 			}
 		}
+		fmt.Println("want smth", token)
 		flag, err := db.DataBaseCheckAuth(token)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -174,6 +175,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
+		fmt.Println("want smth1")
 		orderTmp, _ := io.ReadAll(r.Body)
 		orderNumber := string(orderTmp)
 		fmt.Println("i want to see uploaded number ", orderNumber)
