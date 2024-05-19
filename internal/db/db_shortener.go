@@ -97,6 +97,8 @@ func DataBaseCfg(flagRunAddr string, fileName string) (err error) {
 	}
 	return nil
 }
+
+
 func DataBasePingHandler() (err error) {
 	_, driverTemp, err := DataBaseSelfConfigGet()
 	if err != nil {

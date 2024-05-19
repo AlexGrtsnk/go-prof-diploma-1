@@ -241,7 +241,17 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 				}
 				defer resp.Body.Close()
 			*/
-			res, err := http.Get("http://localhost:34569/api/orders/" + orderNumber)
+			APIAddres, err := db.DataBaseFileNameSelect()
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				_, err = io.WriteString(w, "Error on the side")
+				if err != nil {
+					log.Fatal(err)
+				}
+				return
+			}
+			fmt.Println("sdfg ", APIAddres[len(APIAddres)-4:])
+			res, err := http.Get(APIAddres + "/api/orders/" + orderNumber)
 			fmt.Println("trewq1")
 			if err != nil {
 				fmt.Println("hmppol", err)
