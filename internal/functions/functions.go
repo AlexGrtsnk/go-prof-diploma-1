@@ -183,6 +183,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				log.Fatal(err)
 			}
+			return
 		}
 		fmt.Println("want smth", token)
 		flag, err := db.DataBaseCheckAuth(token)
