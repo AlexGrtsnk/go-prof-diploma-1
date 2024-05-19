@@ -309,7 +309,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func GetUserBalancePage(w http.ResponseWriter, r *http.Request) {
+func getUserBalancePage(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		token, err := cks.GetCookieHandler(w, r)
 		if err != nil {
@@ -447,7 +447,7 @@ func dropBalancePage(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func GetAllOrdersBalanceDropPage(w http.ResponseWriter, r *http.Request) {
+func getAllOrdersBalanceDropPage(w http.ResponseWriter, r *http.Request) {
 	token, err := cks.GetCookieHandler(w, r)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -488,7 +488,7 @@ func GetAllOrdersBalanceDropPage(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func GetAllUsersPointsOrders(w http.ResponseWriter, r *http.Request) {
+func getAllUsersPointsOrders(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		token, err := cks.GetCookieHandler(w, r)
 		if err != nil {
@@ -623,7 +623,7 @@ func OrdersHandler() http.Handler {
 }
 
 func UserBalanceHandler() http.Handler {
-	fn := GetUserBalancePage
+	fn := getUserBalancePage
 	return http.HandlerFunc(fn)
 }
 
@@ -633,11 +633,11 @@ func UserDropBalanceHandler() http.Handler {
 }
 
 func UserDroppedBalanceStatsHandler() http.Handler {
-	fn := GetAllOrdersBalanceDropPage
+	fn := getAllOrdersBalanceDropPage
 	return http.HandlerFunc(fn)
 }
 
 func GetAllUsersPointsOrdersHandler() http.Handler {
-	fn := GetAllUsersPointsOrders
+	fn := getAllUsersPointsOrders
 	return http.HandlerFunc(fn)
 }
