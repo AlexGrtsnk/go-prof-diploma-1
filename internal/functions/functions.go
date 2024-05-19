@@ -225,22 +225,34 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 				}
 				return
 			}
-			res, err := http.Get(APIAddres + "/api/orders/" + orderNumber)
-			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				_, err = io.WriteString(w, "Error on the side")
+			kol := 0
+			dataTmp := new(flw.WithAnsw)
+			for kol < 60 {
+				kol += 1
+				res, err := http.Get(APIAddres + "/api/orders/" + orderNumber)
 				if err != nil {
-					log.Fatal(err)
+					w.WriteHeader(http.StatusInternalServerError)
+					_, err = io.WriteString(w, "Error on the side")
+					if err != nil {
+						log.Fatal(err)
+					}
+					return
 				}
-				return
+				defer res.Body.Close()
+				data := new(flw.WithAnsw)
+				err = json.NewDecoder(res.Body).Decode(data)
+				if err != nil {
+					continue
+				} else {
+					dataTmp.Accrual = data.Accrual
+					dataTmp.Order = data.Order
+					dataTmp.Status = data.Status
+					break
+				}
 			}
-			defer res.Body.Close()
-			data := new(flw.WithAnsw)
-			err = json.NewDecoder(res.Body).Decode(data)
-			if err != nil {
-				return
+			if kol < 60 {
+				err = db.DataBaseOrdersAllBalance(token, dataTmp.Status, dataTmp.Accrual, dataTmp.Order)
 			}
-			err = db.DataBaseOrdersAllBalance(token, data.Status, data.Accrual, data.Order)
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				_, err = io.WriteString(w, "Error on the side")
