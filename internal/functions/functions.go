@@ -252,15 +252,16 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			}
 			if kol < 60 {
 				err = db.DataBaseOrdersAllBalance(token, dataTmp.Status, dataTmp.Accrual, dataTmp.Order)
-			}
-			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				_, err = io.WriteString(w, "Error on the side")
 				if err != nil {
-					log.Fatal(err)
+					w.WriteHeader(http.StatusInternalServerError)
+					_, err = io.WriteString(w, "Error on the side")
+					if err != nil {
+						log.Fatal(err)
+					}
+					return
 				}
-				return
 			}
+
 			return
 		}
 
