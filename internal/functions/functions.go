@@ -228,6 +228,36 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			fmt.Println("help3")
+			/*
+				client := http.Client{}
+				request, err := http.NewRequest("GET", "http://localhost:32895/api/orders/"+orderNumber, nil)
+				if err != nil {
+					fmt.Println("hmppol")
+					log.Fatal(err)
+				}
+				resp, err := client.Do(request)
+				if err != nil {
+					w.WriteHeader(http.StatusBadRequest)
+				}
+				defer resp.Body.Close()
+			*/
+			res, err := http.Get("http://localhost:32895/api/orders/" + orderNumber)
+			fmt.Println("trewq1")
+			if err != nil {
+				fmt.Println("hmppol")
+				log.Fatal(err)
+			}
+			fmt.Println("trewq2")
+			defer res.Body.Close()
+			decoder := json.NewDecoder(res.Body)
+			var data flw.WithAnsw
+			err = decoder.Decode(&data)
+			fmt.Println("trewq3")
+			if err != nil {
+				fmt.Println("hmppol")
+				log.Fatal(err)
+			}
+			fmt.Println("trewq4 ", data)
 			return
 		}
 
