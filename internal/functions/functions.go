@@ -132,7 +132,7 @@ func authentificateUserPage(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		_, err = cks.GetCookieHandler(w, r)
-		if err == nil {
+		if err != nil {
 			fmt.Println("help me please123")
 
 			return
