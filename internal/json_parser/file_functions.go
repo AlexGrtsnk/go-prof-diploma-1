@@ -30,7 +30,7 @@ type DrawAnsw struct {
 }
 
 type WithAnsw struct {
-	Order   string  `json:"number"`
+	Order   string  `json:"order"`
 	Status  string  `json:"status"`
 	Accrual float64 `json:"accrual"`
 }

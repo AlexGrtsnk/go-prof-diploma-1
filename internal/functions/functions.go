@@ -215,10 +215,10 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if flag == 3 {
-			_ = db.DataBaseOrdersAllBalance(token, "PROCESSED", 729.98, "12345678")
 			w.WriteHeader(http.StatusAccepted)
 			fmt.Println("help1")
 			err = db.DataBasePostOrder(orderNumber, token)
+			_ = db.DataBaseOrdersAllBalance(token, "PROCESSED", 729.98, "12345678")
 			fmt.Println("help2")
 			if err != nil {
 				w.WriteHeader(http.StatusGatewayTimeout)
