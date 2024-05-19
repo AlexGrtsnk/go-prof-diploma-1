@@ -268,7 +268,8 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("trewq3")
 			if err != nil {
 				fmt.Println("hmppol")
-				log.Fatal(err)
+				return
+				//log.Fatal(err)
 			}
 			fmt.Println("trewq4 ", data)
 			/*
