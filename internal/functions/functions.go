@@ -131,6 +131,12 @@ func authentificateUserPage(w http.ResponseWriter, r *http.Request) {
 				log.Fatal(err)
 			}
 		}
+		_, err = cks.GetCookieHandler(w, r)
+		if err == nil {
+			fmt.Println("help me please123")
+
+			return
+		}
 		var ath flw.Auth
 		var buf bytes.Buffer
 		_, err = buf.ReadFrom(reader)
@@ -159,7 +165,7 @@ func authentificateUserPage(w http.ResponseWriter, r *http.Request) {
 		cksTmp := cks.SetCookieHandler(w, r, token)
 		http.SetCookie(w, cksTmp)
 		w.WriteHeader(http.StatusOK)
-		fmt.Println("webt good", flag)
+		fmt.Println("webt good", flag, token, cksTmp.Value)
 
 	}
 
