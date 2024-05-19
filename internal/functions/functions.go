@@ -59,9 +59,9 @@ func registrateNewUserPage(w http.ResponseWriter, r *http.Request) {
 				log.Fatal(err)
 			}
 		}
-		var cookiesTmp *http.Cookie
 		//_, err = cks.GetCookieHandler(w, r)
 		err = sql.ErrNoRows
+		var tmp string
 		if err != nil {
 			token, err := ath.BuildJWTString()
 			if err != nil {
@@ -71,17 +71,9 @@ func registrateNewUserPage(w http.ResponseWriter, r *http.Request) {
 					log.Fatal(err)
 				}
 			}
-			cookiesTmp = cks.SetCookieHandler(w, r, token)
+			tmp = token
 		} else {
 			fmt.Println("MAYBE")
-			cookiesTmp, err = r.Cookie("exampleCookie")
-			if err != nil {
-				w.WriteHeader(http.StatusBadRequest)
-				_, err = io.WriteString(w, "Error on the side")
-				if err != nil {
-					log.Fatal(err)
-				}
-			}
 		}
 		fmt.Println("we are here1")
 		fmt.Println("we are here2")
@@ -111,7 +103,8 @@ func registrateNewUserPage(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusConflict)
 			//http.SetCookie(w, nil)
 		} else {
-			err = db.DataBasePostUser(ath.Login, ath.Password, cookiesTmp.Value)
+			err = db.DataBasePostUser(ath.Login, ath.Password, tmp)
+			cks.SetCookieHandler(w, r, tmp)
 			if err != nil {
 				w.WriteHeader(http.StatusServiceUnavailable)
 				_, err = io.WriteString(w, "Error on the side")
