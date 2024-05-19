@@ -334,7 +334,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 		//var newOrderItems flw.Ord
 		fmt.Println("starting processing1")
 		newOrdersList, err := db.DataBaseGetOrders(token)
-		var tmpNewOrdersList flw.OrdersList
+		//var tmpNewOrdersList flw.OrdersList
 		fmt.Println("starting processing2", newOrdersList[0], err)
 		if err != nil {
 			fmt.Println("writingheader4")
@@ -353,10 +353,10 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		fmt.Println("jsonwentgood3")
-		tmpNewOrdersList = append(tmpNewOrdersList, newOrdersList[len(newOrdersList)-1])
+		//tmpNewOrdersList = append(tmpNewOrdersList, newOrdersList[len(newOrdersList)-1])
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		if err = json.NewEncoder(w).Encode(tmpNewOrdersList); err != nil {
+		if err = json.NewEncoder(w).Encode(newOrdersList); err != nil {
 			log.Panic(err)
 		}
 		fmt.Println("jsonwentgood4")
