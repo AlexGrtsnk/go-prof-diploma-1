@@ -249,15 +249,30 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			}
 			fmt.Println("trewq2")
 			defer res.Body.Close()
-			decoder := json.NewDecoder(res.Body)
-			var data flw.WithAnsw
-			err = decoder.Decode(&data)
+			//decoder := json.NewDecoder(res.Body)
+			data := new(flw.WithAnsw)
+			err = json.NewDecoder(res.Body).Decode(data)
+			//err = decoder.Decode(&data)
 			fmt.Println("trewq3")
 			if err != nil {
 				fmt.Println("hmppol")
 				log.Fatal(err)
 			}
 			fmt.Println("trewq4 ", data)
+			/*
+				var ques flw.WithAnsw
+				var buf bytes.Buffer
+				_, err = buf.ReadFrom(res.Body)
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusBadRequest)
+					return
+				}
+				if err = json.Unmarshal(buf.Bytes(), &ques); err != nil {
+					http.Error(w, err.Error(), http.StatusBadRequest)
+					return
+				}
+				fmt.Println("trew15 ", ques)
+			*/
 			return
 		}
 
