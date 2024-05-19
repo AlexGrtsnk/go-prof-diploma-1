@@ -53,21 +53,10 @@ func generateShortKey() string {
 // BuildJWTString создаёт токен и возвращает его в виде строки.
 func BuildJWTString() (string, error) {
 	// создаём новый токен с алгоритмом подписи HS256 и утверждениями — Claims
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, Claims{
-		RegisteredClaims: jwt.RegisteredClaims{
-			// когда создан токен
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(tokenExp)),
-		},
-		// собственное утверждение
-		UserID: 1,
-	})
 
 	// создаём строку токена
-	tokenString, err := token.SignedString([]byte(secretKey))
-	if err != nil {
-		return "", err
-	}
+	//tokenString, err := token.SignedString([]byte(secretKey))
 	mytoken := generateShortKey()
 	// возвращаем строку токена
-	return tokenString + mytoken, nil
+	return mytoken, nil
 }
