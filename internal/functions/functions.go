@@ -60,7 +60,8 @@ func registrateNewUserPage(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		var cookiesTmp *http.Cookie
-		_, err = cks.GetCookieHandler(w, r)
+		//_, err = cks.GetCookieHandler(w, r)
+		err = sql.ErrNoRows
 		if err != nil {
 			token, err := ath.BuildJWTString()
 			if err != nil {
