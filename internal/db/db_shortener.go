@@ -264,13 +264,10 @@ func DataBaseCheckUserExistance(login string, password string) (flag int, tknm s
 	}
 	defer db.Close()
 	var token string
-	fmt.Println("inside1")
 	if err := db.QueryRow("SELECT token FROM users WHERE lgn = '" + string(login) + "' and psw = '" + string(password) + "';").Scan(&token); err != nil {
 		if err == sql.ErrNoRows {
-			fmt.Println("inside2")
 			return 0, "", nil
 		}
-		fmt.Println("inside3")
 		return 0, "", err
 	}
 	return 1, token, nil
@@ -287,19 +284,15 @@ func DataBasePostUser(login string, password string, token string) (err error) {
 		return err
 	}
 	defer db.Close()
-	fmt.Println("inside11")
 	quer := `INSERT INTO users(lgn, psw, token) VALUES ('` + string(login) + `', '` + string(password) + `', '` + token + `')`
-	fmt.Println("inside12")
 	_, err = db.Exec(quer)
-	fmt.Println("inside13 ", err)
 	if err != nil {
 		return err
 	}
-	fmt.Println("inside14")
 	return nil
 }
 
-func DataBaseCheckAuth(token string) (falg int, err error) {
+func DataBaseCheckAuth(token string) (flag int, err error) {
 	var db *sql.DB
 	dbName, dbms, err := DataBaseSelfConfigGet()
 	if err != nil {
@@ -335,7 +328,6 @@ func DataBaseCheckOrderExistance(orderNumber string, token string) (flag int, er
 	var sts string
 	flagEQ := 0
 	flagNEQ := 0
-	fmt.Println("Before1")
 	if err := db.QueryRow("SELECT sts FROM orders WHERE nmb = '" + string(orderNumber) + "' and token = '" + string(token) + "';").Scan(&sts); err != nil {
 		if err == sql.ErrNoRows {
 			flagEQ = 1
@@ -343,7 +335,6 @@ func DataBaseCheckOrderExistance(orderNumber string, token string) (flag int, er
 			return 0, err
 		}
 	}
-	fmt.Println("Before2", "SELECT sts FROM orders WHERE nmb = '"+string(orderNumber)+"' and token != '"+string(token)+"';")
 	if err := db.QueryRow("SELECT sts FROM orders WHERE nmb = '" + string(orderNumber) + "' and token != '" + string(token) + "';").Scan(&sts); err != nil {
 		if err == sql.ErrNoRows {
 			flagNEQ = 1
@@ -351,7 +342,6 @@ func DataBaseCheckOrderExistance(orderNumber string, token string) (flag int, er
 			return 0, err
 		}
 	}
-	fmt.Println("this is flag ", flagEQ, flagNEQ, sts)
 	if flagEQ == 1 && flagNEQ == 1 {
 		return 3, nil
 	}
@@ -387,7 +377,7 @@ func DataBasePostOrder(orderNumber string, token string) (err error) {
 	return nil
 }
 
-func DataBaseGetOrders(token string) (answb flw.OrdersList, err error) {
+func DataBaseGetOrders(token string) (ordersList flw.OrdersList, err error) {
 	var db *sql.DB
 	dbName, dbms, err := DataBaseSelfConfigGet()
 	if err != nil {
@@ -398,32 +388,28 @@ func DataBaseGetOrders(token string) (answb flw.OrdersList, err error) {
 		return nil, err
 	}
 	defer db.Close()
-	fmt.Println("starting processing3")
 	quer := "SELECT nmb, sts, accural, ts from orders where token = '" + token + "';"
 	rows, err := db.Query(quer)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("starting processing4")
 	flag := 0
 	for rows.Next() {
-		answ := new(flw.Orders)
-		err = rows.Scan(&answ.Number, &answ.Status, &answ.Accrual, &answ.Uoloaded)
+		orders := new(flw.Orders)
+		err = rows.Scan(&orders.Number, &orders.Status, &orders.Accrual, &orders.Uoloaded)
 		if err != nil {
 			return nil, err
 		}
 		if rows.Err() != nil {
 			return nil, rows.Err()
 		}
-		//answ.ShortURL = apiRunAddr + "/" + answ.ShortURL
-		answb = append(answb, *answ)
-		fmt.Println("starting processing67", flag)
+		ordersList = append(ordersList, *orders)
 		flag = 1
 	}
 	if flag == 0 {
 		return nil, sql.ErrNoRows
 	}
-	return answb, nil
+	return ordersList, nil
 }
 
 func DataBaseGetUserAccural(token string) (ac float64, wd float64, err error) {
@@ -451,7 +437,6 @@ func DataBaseGetUserAccural(token string) (ac float64, wd float64, err error) {
 		}
 		return -1, -1, err
 	}
-	fmt.Println("BAALANCE ", accuralSum, witdhraw)
 	return accuralSum, witdhraw, nil
 }
 
@@ -501,7 +486,6 @@ func DataBaseUserSumBalance(token string, points float64, ordernum string) (err 
 	quer = "UPDATE orders SET sumbals='" + fmt.Sprint(points) + "' WHERE token = '" + token + "';"
 
 	_, err = db.Exec(quer)
-	fmt.Println("ghjk ", points, "UPDATE orders SET sumbals='"+fmt.Sprint(points)+"' WHERE nmb = '"+ordernum+"';", err)
 	if err != nil {
 		return err
 	}
@@ -533,46 +517,6 @@ func DataBaseUserGetBalance(token string, balance float64) (flag int, err error)
 	return 0, nil
 }
 
-/*
-func DataBaseUpdateUserBalance(token string) (err error) {
-	var db *sql.DB
-	dbName, dbms, err := DataBaseSelfConfigGet()
-	if err != nil {
-		return err
-	}
-	db, err = sql.Open(dbms, dbName)
-	if err != nil {
-		return err
-	}
-	defer db.Close()
-	quer := "SELECT accural from orders where token = '" + token + "' and status = 'PROCESSED';"
-	rows, err := db.Query(quer)
-	if err != nil {
-		return err
-	}
-	//flag := 0
-	accuralSum := 0
-	for rows.Next() {
-		//answ := new(flw.Orders)
-		var tmp int
-		err = rows.Scan(&tmp)
-		if err != nil {
-			return err
-		}
-		if rows.Err() != nil {
-			return rows.Err()
-		}
-		//answ.ShortURL = apiRunAddr + "/" + answ.ShortURL
-		//answb = append(answb, *answ)
-		if tmp == -1 {
-			continue
-		}
-		accuralSum += tmp
-	}
-
-}
-*/
-
 func DataBaseOrdersAllBalance(token string, sts string, balance float64, nmb string) (err error) {
 	dbName, dbms, err := DataBaseSelfConfigGet()
 	if err != nil {
@@ -600,59 +544,15 @@ func DataBaseOrdersAllBalance(token string, sts string, balance float64, nmb str
 		}
 		return err
 	}
-	//newBalance:= blncOld + balance
 	quer = "UPDATE users SET balance='" + strconv.FormatFloat(balance, 'f', 3, 64) + "' WHERE token = '" + token + "';"
 	_, err = db.Exec(quer)
 	if err != nil {
 		return err
 	}
-	fmt.Println("HAVE DONE")
 	return nil
-	/*
-		quer := "SELECT accural, nmb from orders where token = '" + token + "' and sts = 'PROCESSING' ;"
-		rows, err := db.Query(quer)
-		if err != nil {
-			return err
-		}
-		flag := 0
-		accuralSum := 0
-		for rows.Next() {
-			//answ := new(flw.Orders)
-			var tmp int
-			var nmb string
-			err = rows.Scan(&tmp, &nmb)
-			if err != nil {
-				return err
-			}
-			if rows.Err() != nil {
-				return rows.Err()
-			}
-			//answ.ShortURL = apiRunAddr + "/" + answ.ShortURL
-			//answb = append(answb, *answ)
-			if tmp == -1 {
-				continue
-			}
-			flag = 1
-			accuralSum += tmp
-			quer = "UPDATE orders SET sts='PROCESSED' WHERE nmb = '" + nmb + "';"
-			_, err = db.Exec(quer)
-			if err != nil {
-				return err
-			}
-		}
-		if flag == 0 {
-			return sql.ErrNoRows
-		}
-		quer = "UPDATE users SET balance='" + fmt.Sprint(accuralSum) + "' WHERE token = '" + token + "';"
-		_, err = db.Exec(quer)
-		if err != nil {
-			return err
-		}
-		return nil
-	*/
 }
 
-func DataBaseOrdersDropBalance(token string) (answ flw.DrawAnswList, err error) {
+func DataBaseOrdersDropBalance(token string) (drawAnswList flw.DrawAnswList, err error) {
 	dbName, dbms, err := DataBaseSelfConfigGet()
 	if err != nil {
 		return nil, err
@@ -670,59 +570,56 @@ func DataBaseOrdersDropBalance(token string) (answ flw.DrawAnswList, err error) 
 	accuralSum := 0.0
 
 	for rows.Next() {
-		var sumbals float64
+		var sumPoints float64
 		var nmb string
 		var ts string
-		var tmp flw.DrawAnsw
-		err = rows.Scan(&nmb, &sumbals, &ts)
-		fmt.Println("yuiop ", nmb, sumbals, ts)
+		var drawAnsw flw.DrawAnsw
+		err = rows.Scan(&nmb, &sumPoints, &ts)
 		if err != nil {
 			return nil, err
 		}
 		if rows.Err() != nil {
 			return nil, rows.Err()
 		}
-		if sumbals > 0 {
-			accuralSum += sumbals
-			tmp.Order = nmb
-			tmp.Sum = sumbals
-			tmp.ProccessedAt = ts
-			answ = append(answ, tmp)
+		if sumPoints > 0 {
+			accuralSum += sumPoints
+			drawAnsw.Order = nmb
+			drawAnsw.Sum = sumPoints
+			drawAnsw.ProccessedAt = ts
+			drawAnswList = append(drawAnswList, drawAnsw)
 		}
-		fmt.Println("drpansw ", answ[0].Order, answ[0].ProccessedAt, answ[0].Sum)
 	}
 	if accuralSum == 0 {
 		return nil, sql.ErrNoRows
 	}
-	fmt.Println("drpansw3 ", answ, token)
-	return answ, nil
+	return drawAnswList, nil
 }
 
-func DataBaseOrdersPoints(orderNumber string, token string) (answ flw.WithAnsw, err error) {
+func DataBaseOrdersPoints(orderNumber string, token string) (withAnsw flw.WithAnsw, err error) {
 	var db *sql.DB
 	dbName, dbms, err := DataBaseSelfConfigGet()
 	if err != nil {
-		return answ, err
+		return withAnsw, err
 	}
 	db, err = sql.Open(dbms, dbName)
 	if err != nil {
-		return answ, err
+		return withAnsw, err
 	}
 	defer db.Close()
 	quer := "SELECT nmb, sts, accural from orders where token = '" + token + "';"
 	rows, err := db.Query(quer)
 	if err != nil {
-		return answ, err
+		return withAnsw, err
 	}
 	for rows.Next() {
-		err = rows.Scan(&answ.Order, &answ.Status, &answ.Accrual)
+		err = rows.Scan(&withAnsw.Order, &withAnsw.Status, &withAnsw.Accrual)
 		if err != nil {
-			return answ, err
+			return withAnsw, err
 		}
 		if rows.Err() != nil {
-			return answ, rows.Err()
+			return withAnsw, rows.Err()
 		}
 	}
-	return answ, nil
+	return withAnsw, nil
 
 }

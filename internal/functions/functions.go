@@ -48,7 +48,6 @@ func checksum(number int) int {
 }
 
 func registrateNewUserPage(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("we are here")
 	if r.Method == http.MethodPost {
 		reader, err := gzp.GzipFormatHandlerJSON(w, r)
 		if err != nil {
@@ -580,7 +579,6 @@ func Run() error {
 	if cfg.DatabaseURI != "" {
 		databaseDSN = cfg.DatabaseURI
 	}
-	log.Println(cfg)
 	err = db.DataBaseStartConfig(databaseDSN)
 	if err != nil {
 		log.Fatal(err)
