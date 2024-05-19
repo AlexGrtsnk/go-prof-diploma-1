@@ -126,31 +126,27 @@ func authentificateUserPage(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		reader, err := gzp.GzipFormatHandlerJSON(w, r)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			w.WriteHeader(http.StatusInternalServerError)
 			_, err = io.WriteString(w, "Error on the side")
 			if err != nil {
 				log.Fatal(err)
 			}
 		}
-		_, err = cks.GetCookieHandler(w, r)
-		if err != nil {
-			fmt.Println("help me please123")
-		}
 		var ath flw.Auth
 		var buf bytes.Buffer
 		_, err = buf.ReadFrom(reader)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		if err = json.Unmarshal(buf.Bytes(), &ath); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		flag, token, err := db.DataBaseCheckUserExistance(ath.Login, ath.Password)
 		//cks.SetCookieHandler(w, r, token)
 		if err != nil {
-			w.WriteHeader(http.StatusServiceUnavailable)
+			w.WriteHeader(http.StatusInternalServerError)
 			_, err = io.WriteString(w, "Error on the side")
 			if err != nil {
 				log.Fatal(err)
@@ -158,15 +154,11 @@ func authentificateUserPage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if flag == 0 {
-			w.WriteHeader(http.StatusBadRequest)
+			w.WriteHeader(http.StatusUnauthorized)
 			//http.SetCookie(w, nil)
 		}
-		cksTmp := cks.SetCookieHandler(w, r, token)
-		http.SetCookie(w, cksTmp)
+		cks.SetCookieHandler(w, r, token)
 		w.WriteHeader(http.StatusOK)
-		fmt.Println("webt good", flag, token, cksTmp.Value, cksTmp.Name, cksTmp.Path, ath.Login, ath.Password)
-		r.Header.Add("Authorization", token)
-
 	}
 
 }
