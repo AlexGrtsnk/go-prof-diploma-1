@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strconv"
 
 	bn "github.com/AlexGrtsnk/go-prof-diploma-1/internal/bindata"
 
@@ -571,7 +572,7 @@ func DataBaseUpdateUserBalance(token string) (err error) {
 }
 */
 
-func DataBaseOrdersAllBalance(token string) (err error) {
+func DataBaseOrdersAllBalance(token string, sts string, balance float64, nmb string) (err error) {
 	dbName, dbms, err := DataBaseSelfConfigGet()
 	if err != nil {
 		return err
@@ -581,17 +582,26 @@ func DataBaseOrdersAllBalance(token string) (err error) {
 		return err
 	}
 	defer db.Close()
-	quer := "UPDATE orders SET sts='PROCESSED' WHERE token = '" + token + "';"
+	quer := "UPDATE orders SET sts='" + sts + "' WHERE token = '" + token + "';"
 	_, err = db.Exec(quer)
 	if err != nil {
 		return err
 	}
-	quer = "UPDATE orders SET accural=729.98 WHERE token = '" + token + "';"
+	quer = "UPDATE orders SET accural='" + strconv.FormatFloat(balance, 'f', 3, 64) + "' WHERE token = '" + token + "';"
 	_, err = db.Exec(quer)
 	if err != nil {
 		return err
 	}
-	quer = "UPDATE users SET balance=729.98" + ";"
+	var blncOld float64
+	if err := db.QueryRow("SELECT balance FROM users WHERE token = '" + string(token) + "';").Scan(&blncOld); err != nil {
+		if err == sql.ErrNoRows {
+			return sql.ErrNoRows
+		}
+		return err
+	}
+	var newBalance float64
+	newBalance = blncOld + balance
+	quer = "UPDATE users SET accural='" + strconv.FormatFloat(newBalance, 'f', 3, 64) + "' WHERE token = '" + token + "';"
 	_, err = db.Exec(quer)
 	if err != nil {
 		return err

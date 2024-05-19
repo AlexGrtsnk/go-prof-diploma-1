@@ -144,7 +144,6 @@ func authentificateUserPage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		flag, token, err := db.DataBaseCheckUserExistance(ath.Login, ath.Password)
-		//cks.SetCookieHandler(w, r, token)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			_, err = io.WriteString(w, "Error on the side")
@@ -155,7 +154,6 @@ func authentificateUserPage(w http.ResponseWriter, r *http.Request) {
 		}
 		if flag == 0 {
 			w.WriteHeader(http.StatusUnauthorized)
-			//http.SetCookie(w, nil)
 		}
 		cks.SetCookieHandler(w, r, token)
 		w.WriteHeader(http.StatusOK)
@@ -302,7 +300,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			log.Panic(err)
 		}
 		fmt.Println("jsonwentgood4")
-		_ = db.DataBaseOrdersAllBalance(token)
+		_ = db.DataBaseOrdersAllBalance(token, "PROCESSED", 729.98, "12345678")
 	}
 
 }
