@@ -104,7 +104,8 @@ func registrateNewUserPage(w http.ResponseWriter, r *http.Request) {
 			//http.SetCookie(w, nil)
 		} else {
 			err = db.DataBasePostUser(ath.Login, ath.Password, tmp)
-			cks.SetCookieHandler(w, r, tmp)
+			qwe := cks.SetCookieHandler(w, r, tmp)
+			http.SetCookie(w, qwe)
 			if err != nil {
 				w.WriteHeader(http.StatusServiceUnavailable)
 				_, err = io.WriteString(w, "Error on the side")
@@ -113,7 +114,7 @@ func registrateNewUserPage(w http.ResponseWriter, r *http.Request) {
 				}
 				return
 			}
-			fmt.Println("every thing went good ", ath.Login, ath.Password)
+			fmt.Println("every thing went good ", ath.Login, ath.Password, qwe.Name, qwe.Path, qwe.Value)
 			w.WriteHeader(http.StatusOK)
 		}
 
@@ -163,7 +164,7 @@ func authentificateUserPage(w http.ResponseWriter, r *http.Request) {
 		cksTmp := cks.SetCookieHandler(w, r, token)
 		http.SetCookie(w, cksTmp)
 		w.WriteHeader(http.StatusOK)
-		fmt.Println("webt good", flag, token, cksTmp.Value)
+		fmt.Println("webt good", flag, token, cksTmp.Value, cksTmp.Name, cksTmp.Path)
 
 	}
 
@@ -183,7 +184,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
-		fmt.Println("want smth", token[len(token)-10:])
+		fmt.Println("want smth", token[len(token)-1:])
 		flag, err := db.DataBaseCheckAuth(token)
 		fmt.Println("want smth", flag, err)
 		if err != nil {
