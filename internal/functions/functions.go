@@ -155,8 +155,8 @@ func authentificateUserPage(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 			http.SetCookie(w, nil)
 		} else {
-			cks_tmp := cks.SetCookieHandler(w, r, token)
-			http.SetCookie(w, cks_tmp)
+			cks.SetCookieHandler(w, r, token)
+			//http.SetCookie(w, cks_tmp)
 			w.WriteHeader(http.StatusOK)
 			fmt.Println("webt good")
 		}
