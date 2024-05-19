@@ -98,7 +98,6 @@ func DataBaseCfg(flagRunAddr string, fileName string) (err error) {
 	return nil
 }
 
-
 func DataBasePingHandler() (err error) {
 	_, driverTemp, err := DataBaseSelfConfigGet()
 	if err != nil {
@@ -601,8 +600,8 @@ func DataBaseOrdersAllBalance(token string, sts string, balance float64, nmb str
 		}
 		return err
 	}
-	newBalance:= blncOld + balance
-	quer = "UPDATE users SET balance='" + strconv.FormatFloat(newBalance, 'f', 3, 64) + "' WHERE token = '" + token + "';"
+	//newBalance:= blncOld + balance
+	quer = "UPDATE users SET balance='" + strconv.FormatFloat(balance, 'f', 3, 64) + "' WHERE token = '" + token + "';"
 	_, err = db.Exec(quer)
 	if err != nil {
 		return err
