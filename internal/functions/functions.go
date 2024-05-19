@@ -72,6 +72,7 @@ func registrateNewUserPage(w http.ResponseWriter, r *http.Request) {
 			}
 			cookiesTmp = cks.SetCookieHandler(w, r, token)
 		} else {
+			fmt.Println("MAYBE")
 			cookiesTmp, err = r.Cookie("exampleCookie")
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)
@@ -82,7 +83,6 @@ func registrateNewUserPage(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		fmt.Println("we are here1")
-		http.SetCookie(w, cookiesTmp)
 		fmt.Println("we are here2")
 		var ath flw.Auth
 		var buf bytes.Buffer
