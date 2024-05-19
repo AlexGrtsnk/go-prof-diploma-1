@@ -599,9 +599,8 @@ func DataBaseOrdersAllBalance(token string, sts string, balance float64, nmb str
 		}
 		return err
 	}
-	var newBalance float64
-	newBalance = blncOld + balance
-	quer = "UPDATE users SET accural='" + strconv.FormatFloat(newBalance, 'f', 3, 64) + "' WHERE token = '" + token + "';"
+	newBalance:= blncOld + balance
+	quer = "UPDATE users SET balance='" + strconv.FormatFloat(newBalance, 'f', 3, 64) + "' WHERE token = '" + token + "';"
 	_, err = db.Exec(quer)
 	if err != nil {
 		return err
