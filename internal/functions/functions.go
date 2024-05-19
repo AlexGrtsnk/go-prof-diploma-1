@@ -47,21 +47,20 @@ func checksum(number int) int {
 	return luhn % 10
 }
 
-// аутентификация доне в теории
 func registrateNewUserPage(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("we are here")
 	if r.Method == http.MethodPost {
 		reader, err := gzp.GzipFormatHandlerJSON(w, r)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+			w.WriteHeader(http.StatusBadRequest)
 			_, err = io.WriteString(w, "Error on the side")
 			if err != nil {
 				log.Fatal(err)
 			}
 			return
 		}
-		err = sql.ErrNoRows
 		var tokenTmp string
+		_, err = cks.GetCookieHandler(w, r)
 		if err != nil {
 			token, err := ath.BuildJWTString()
 			if err != nil {
@@ -73,11 +72,7 @@ func registrateNewUserPage(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			tokenTmp = token
-		} else {
-			fmt.Println("MAYBE")
 		}
-		fmt.Println("we are here1")
-		fmt.Println("we are here2")
 		var ath flw.Auth
 		var buf bytes.Buffer
 		_, err = buf.ReadFrom(reader)
@@ -89,9 +84,7 @@ func registrateNewUserPage(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		fmt.Println("we are here3")
 		flag, _, err := db.DataBaseCheckUserExistance(ath.Login, ath.Password)
-		fmt.Println("we are here4", flag)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			_, err = io.WriteString(w, "Error on the side")
@@ -114,19 +107,17 @@ func registrateNewUserPage(w http.ResponseWriter, r *http.Request) {
 				}
 				return
 			}
-			fmt.Println("every thing went good ", ath.Login, ath.Password, qwe.Name, qwe.Path, qwe.Value)
 			w.WriteHeader(http.StatusOK)
 		}
 
 	}
 }
 
-// v teorii authen done
 func authentificateUserPage(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		reader, err := gzp.GzipFormatHandlerJSON(w, r)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+			w.WriteHeader(http.StatusBadRequest)
 			_, err = io.WriteString(w, "Error on the side")
 			if err != nil {
 				log.Fatal(err)
@@ -154,6 +145,7 @@ func authentificateUserPage(w http.ResponseWriter, r *http.Request) {
 		}
 		if flag == 0 {
 			w.WriteHeader(http.StatusUnauthorized)
+			return
 		}
 		cks.SetCookieHandler(w, r, token)
 		w.WriteHeader(http.StatusOK)
@@ -161,13 +153,10 @@ func authentificateUserPage(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// dopisat proverky algoritm luna
 func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
-
 		token, err := cks.GetCookieHandler(w, r)
 		if err != nil {
-			fmt.Println("help me please")
 			w.WriteHeader(http.StatusUnauthorized)
 			_, err = io.WriteString(w, "Error on the side")
 			if err != nil {
@@ -175,11 +164,9 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
-		fmt.Println("want smth", token[len(token)-1:])
 		flag, err := db.DataBaseCheckAuth(token)
-		fmt.Println("want smth", flag, err)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			w.WriteHeader(http.StatusInternalServerError)
 			_, err = io.WriteString(w, "Error on the side")
 			if err != nil {
 				log.Fatal(err)
@@ -194,18 +181,23 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
-		fmt.Println("want smth1")
 		orderTmp, _ := io.ReadAll(r.Body)
 		orderNumber := string(orderTmp)
-		fmt.Println("i want to see uploaded number ", orderNumber)
-		i, _ := strconv.Atoi(orderNumber)
-		bl := Valid(i)
-		if !bl {
+		tmpOrderNum, err := strconv.Atoi(orderNumber)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			_, err = io.WriteString(w, "Error on the side")
+			if err != nil {
+				log.Fatal(err)
+			}
+			return
+		}
+		OrderIsValid := Valid(tmpOrderNum)
+		if !OrderIsValid {
 			w.WriteHeader(http.StatusUnprocessableEntity)
 			return
 		}
 		flag, err = db.DataBaseCheckOrderExistance(orderNumber, token)
-		fmt.Println("checking ", flag, err)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			_, err = io.WriteString(w, "Error on the side")
@@ -216,33 +208,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 		}
 		if flag == 3 {
 			w.WriteHeader(http.StatusAccepted)
-			fmt.Println("help1")
 			err = db.DataBasePostOrder(orderNumber, token)
-			//_ = db.DataBaseOrdersAllBalance(token, "PROCESSED", 729.98, "12345678")
-			fmt.Println("help2")
-			if err != nil {
-				w.WriteHeader(http.StatusGatewayTimeout)
-				_, err = io.WriteString(w, "Error on the side")
-				if err != nil {
-					log.Fatal(err)
-				}
-				return
-			}
-			fmt.Println("help3")
-			/*
-				client := http.Client{}
-				request, err := http.NewRequest("GET", "http://localhost:32895/api/orders/"+orderNumber, nil)
-				if err != nil {
-					fmt.Println("hmppol")
-					log.Fatal(err)
-				}
-				resp, err := client.Do(request)
-				if err != nil {
-					w.WriteHeader(http.StatusBadRequest)
-				}
-				defer resp.Body.Close()
-			*/
-			APIAddres, err := db.DataBaseFileNameSelect()
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				_, err = io.WriteString(w, "Error on the side")
@@ -251,43 +217,39 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 				}
 				return
 			}
-			fmt.Println("sdfg ", APIAddres[len(APIAddres)-4:])
-			res, err := http.Get(APIAddres + "/api/orders/" + orderNumber)
-			fmt.Println("trewq1")
-			defer res.Body.Close()
+			APIAddres, err := db.DataBaseAPIAddressSelect()
 			if err != nil {
-				fmt.Println("hmppol", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				_, err = io.WriteString(w, "Error on the side")
+				if err != nil {
+					log.Fatal(err)
+				}
 				return
-				//log.Fatal(err)
 			}
-			fmt.Println("trewq2")
-			//defer res.Body.Close()
-			//decoder := json.NewDecoder(res.Body)
+			res, err := http.Get(APIAddres + "/api/orders/" + orderNumber)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				_, err = io.WriteString(w, "Error on the side")
+				if err != nil {
+					log.Fatal(err)
+				}
+				return
+			}
+			defer res.Body.Close()
 			data := new(flw.WithAnsw)
 			err = json.NewDecoder(res.Body).Decode(data)
-			//err = decoder.Decode(&data)
-			fmt.Println("trewq3")
 			if err != nil {
-				fmt.Println("hmppol")
 				return
-				//log.Fatal(err)
 			}
-			_ = db.DataBaseOrdersAllBalance(token, data.Status, data.Accrual, data.Order)
-			fmt.Println("trewq4 ", data)
-			/*
-				var ques flw.WithAnsw
-				var buf bytes.Buffer
-				_, err = buf.ReadFrom(res.Body)
+			err = db.DataBaseOrdersAllBalance(token, data.Status, data.Accrual, data.Order)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				_, err = io.WriteString(w, "Error on the side")
 				if err != nil {
-					http.Error(w, err.Error(), http.StatusBadRequest)
-					return
+					log.Fatal(err)
 				}
-				if err = json.Unmarshal(buf.Bytes(), &ques); err != nil {
-					http.Error(w, err.Error(), http.StatusBadRequest)
-					return
-				}
-				fmt.Println("trew15 ", ques)
-			*/
+				return
+			}
 			return
 		}
 
@@ -299,75 +261,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusConflict)
 			return
 		}
-		//_ = db.DataBaseOrdersAllBalance(token)
-		//w.WriteHeader(http.StatusProcessing)
 	}
-	if r.Method == http.MethodGet {
-		token, err := cks.GetCookieHandler(w, r)
-		if err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
-			fmt.Println("writingheader1")
-			_, err = io.WriteString(w, "Error on the side")
-			if err != nil {
-				log.Fatal(err)
-			}
-		}
-		flag, err := db.DataBaseCheckAuth(token)
-		if err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
-			fmt.Println("writingheader2")
-			_, err = io.WriteString(w, "Error on the side")
-			if err != nil {
-				log.Fatal(err)
-			}
-			return
-		}
-		if flag == 0 {
-			w.WriteHeader(http.StatusUnauthorized)
-			fmt.Println("writingheader3")
-			_, err = io.WriteString(w, "Error on the side")
-			if err != nil {
-				log.Fatal(err)
-			}
-			return
-		}
-		//var newOrderItems flw.Ord
-		fmt.Println("starting processing1")
-		newOrdersList, err := db.DataBaseGetOrders(token)
-		//var tmpNewOrdersList flw.OrdersList
-		fmt.Println("starting processing2", newOrdersList[0], err)
-		if err != nil {
-			fmt.Println("writingheader4")
-			w.WriteHeader(http.StatusBadRequest)
-			_, err = io.WriteString(w, "Error on the side")
-			if err != nil {
-				log.Fatal(err)
-			}
-			return
-		}
-		fmt.Println("jsonwentgood2")
-
-		if err == sql.ErrNoRows {
-			w.WriteHeader(http.StatusNoContent)
-			fmt.Println("writingheader4")
-			return
-		}
-		fmt.Println("jsonwentgood3")
-		//tmpNewOrdersList = append(tmpNewOrdersList, newOrdersList[len(newOrdersList)-1])
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		if err = json.NewEncoder(w).Encode(newOrdersList); err != nil {
-			log.Panic(err)
-		}
-		fmt.Println("jsonwentgood4")
-		//_ = db.DataBaseOrdersAllBalance(token, "PROCESSED", 729.98, "12345678")
-	}
-
-}
-
-/*
-// v teorii done
-func getOrdersNumbersPage(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		token, err := cks.GetCookieHandler(w, r)
 		if err != nil {
@@ -379,7 +273,7 @@ func getOrdersNumbersPage(w http.ResponseWriter, r *http.Request) {
 		}
 		flag, err := db.DataBaseCheckAuth(token)
 		if err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
+			w.WriteHeader(http.StatusInternalServerError)
 			_, err = io.WriteString(w, "Error on the side")
 			if err != nil {
 				log.Fatal(err)
@@ -394,10 +288,9 @@ func getOrdersNumbersPage(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
-		//var newOrderItems flw.Ord
 		newOrdersList, err := db.DataBaseGetOrders(token)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			w.WriteHeader(http.StatusInternalServerError)
 			_, err = io.WriteString(w, "Error on the side")
 			if err != nil {
 				log.Fatal(err)
@@ -408,17 +301,15 @@ func getOrdersNumbersPage(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNoContent)
 			return
 		}
-		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
 		if err = json.NewEncoder(w).Encode(newOrdersList); err != nil {
 			log.Panic(err)
 		}
-
 	}
 
 }
-*/
-// vrode done
+
 func GetUserBalancePage(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		token, err := cks.GetCookieHandler(w, r)
@@ -431,7 +322,7 @@ func GetUserBalancePage(w http.ResponseWriter, r *http.Request) {
 		}
 		flag, err := db.DataBaseCheckAuth(token)
 		if err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
+			w.WriteHeader(http.StatusInternalServerError)
 			_, err = io.WriteString(w, "Error on the side")
 			if err != nil {
 				log.Fatal(err)
@@ -455,11 +346,10 @@ func GetUserBalancePage(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
-
-		var answ flw.UserAnsw
-		answ.Current = accural
-		answ.Withdraw = withdraw
-		resp, err := json.Marshal(answ)
+		var userAnsw flw.UserAnsw
+		userAnsw.Current = accural
+		userAnsw.Withdraw = withdraw
+		resp, err := json.Marshal(userAnsw)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -483,7 +373,6 @@ func dropBalancePage(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		}
 	}
-	fmt.Println("dropbalance1")
 	token, err := cks.GetCookieHandler(w, r)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
@@ -492,17 +381,15 @@ func dropBalancePage(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		}
 	}
-	fmt.Println("dropbalance2")
 	flag, err := db.DataBaseCheckAuth(token)
 	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
+		w.WriteHeader(http.StatusInternalServerError)
 		_, err = io.WriteString(w, "Error on the side")
 		if err != nil {
 			log.Fatal(err)
 		}
 		return
 	}
-	fmt.Println("dropbalance3")
 	if flag == 0 {
 		w.WriteHeader(http.StatusUnauthorized)
 		_, err = io.WriteString(w, "Error on the side")
@@ -513,37 +400,31 @@ func dropBalancePage(w http.ResponseWriter, r *http.Request) {
 	}
 	var balanceBatch flw.BalanceAnsw
 	var buf bytes.Buffer
-	fmt.Println("dropbalance4")
 	_, err = buf.ReadFrom(reader)
 	if err != nil {
-		fmt.Println("dropbalancerr ", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	if err = json.Unmarshal(buf.Bytes(), &balanceBatch); err != nil {
-		fmt.Println("dropbalancerr ", err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	fmt.Println("sropbalance ", balanceBatch.Order, balanceBatch.Sum)
 	flag, err = db.DataBaseCheckOrderExistance(balanceBatch.Order, token)
 	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
+		w.WriteHeader(http.StatusInternalServerError)
 		_, err = io.WriteString(w, "Error on the side")
 		if err != nil {
 			log.Fatal(err)
 		}
 		return
 	}
-	fmt.Println("sropbalance1 ", flag, err)
 	if flag == 2 {
 		w.WriteHeader(http.StatusFailedDependency)
 		return
 	}
 	flag, err = db.DataBaseUserGetBalance(token, balanceBatch.Sum)
-	fmt.Println("sropbalance2 ", flag, err)
 	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
+		w.WriteHeader(http.StatusInternalServerError)
 		_, err = io.WriteString(w, "Error on the side")
 		if err != nil {
 			log.Fatal(err)
@@ -555,9 +436,8 @@ func dropBalancePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err = db.DataBaseUserSumBalance(token, balanceBatch.Sum, balanceBatch.Order)
-	fmt.Println("sropbalance3 ", flag, err)
 	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
+		w.WriteHeader(http.StatusInternalServerError)
 		_, err = io.WriteString(w, "Error on the side")
 		if err != nil {
 			log.Fatal(err)
@@ -579,7 +459,7 @@ func GetAllOrdersBalanceDropPage(w http.ResponseWriter, r *http.Request) {
 	}
 	flag, err := db.DataBaseCheckAuth(token)
 	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
+		w.WriteHeader(http.StatusInternalServerError)
 		_, err = io.WriteString(w, "Error on the side")
 		if err != nil {
 			log.Fatal(err)
@@ -595,7 +475,6 @@ func GetAllOrdersBalanceDropPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	drawAnswList, err := db.DataBaseOrdersDropBalance(token)
-	//fmt.Println("drpansw12 ", answBatch[0].Order, answBatch[0].ProccessedAt, answBatch[0].Sum)
 	if err == sql.ErrNoRows {
 		w.WriteHeader(http.StatusNoContent)
 		return
@@ -607,11 +486,10 @@ func GetAllOrdersBalanceDropPage(w http.ResponseWriter, r *http.Request) {
 	if err = json.NewEncoder(w).Encode(tmpDrawAnswList); err != nil {
 		log.Panic(err)
 	}
-	//fmt.Println("MUST DONE", answBatch, answBatch[0], tmp)
 
 }
 
-func GetAllUsersBallsOrders(w http.ResponseWriter, r *http.Request) {
+func GetAllUsersPointsOrders(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		token, err := cks.GetCookieHandler(w, r)
 		if err != nil {
@@ -641,7 +519,6 @@ func GetAllUsersBallsOrders(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		orderNumber, ok := vars["id"]
 		if !ok {
-			fmt.Println("id is missing in parameters")
 			w.WriteHeader(http.StatusInternalServerError)
 			_, err := io.WriteString(w, "bad request")
 			if err != nil {
@@ -658,12 +535,11 @@ func GetAllUsersBallsOrders(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
-		fmt.Println("qwerty ", flag, err, orderNumber)
 		if flag == 3 {
 			w.WriteHeader(http.StatusNoContent)
 			return
 		}
-		answ, err := db.DataBaseOrdersBalls(orderNumber, token)
+		answ, err := db.DataBaseOrdersPoints(orderNumber, token)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			_, err = io.WriteString(w, "Error on the side")
@@ -729,7 +605,7 @@ func Run() error {
 	mux1.HandleFunc(`/api/user/balance`, lg.WithLogging(UserBalanceHandler()))
 	mux1.HandleFunc(`/api/user/balance/withdraw`, lg.WithLogging(UserDropBalanceHandler()))
 	mux1.HandleFunc(`/api/user/withdrawals`, lg.WithLogging(UserDroppedBalanceStatsHandler()))
-	mux1.HandleFunc(`/api/orders/{id}`, lg.WithLogging(GetAllUsersBallsOrdersHandler()))
+	mux1.HandleFunc(`/api/orders/{id}`, lg.WithLogging(GetAllUsersPointsOrdersHandler()))
 	return http.ListenAndServe(flagRunAddr, gzp.GzipHandle(mux1))
 }
 
@@ -763,7 +639,7 @@ func UserDroppedBalanceStatsHandler() http.Handler {
 	return http.HandlerFunc(fn)
 }
 
-func GetAllUsersBallsOrdersHandler() http.Handler {
-	fn := GetAllUsersBallsOrders
+func GetAllUsersPointsOrdersHandler() http.Handler {
+	fn := GetAllUsersPointsOrders
 	return http.HandlerFunc(fn)
 }

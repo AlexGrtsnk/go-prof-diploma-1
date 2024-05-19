@@ -141,7 +141,7 @@ func DataBasePing(dbbname string, driver string) (err error) {
 	return nil
 }
 
-func DataBaseFileNameSelect() (flnm string, err error) {
+func DataBaseAPIAddressSelect() (apiAddress string, err error) {
 	var db *sql.DB
 	var apiRunAddr string
 	dbName, dbms, err := DataBaseSelfConfigGet()
@@ -455,7 +455,7 @@ func DataBaseGetUserAccural(token string) (ac float64, wd float64, err error) {
 	return accuralSum, witdhraw, nil
 }
 
-func DataBaseUserSumBalance(token string, balls float64, ordernum string) (err error) {
+func DataBaseUserSumBalance(token string, points float64, ordernum string) (err error) {
 	var db *sql.DB
 	dbName, dbms, err := DataBaseSelfConfigGet()
 	if err != nil {
@@ -480,9 +480,9 @@ func DataBaseUserSumBalance(token string, balls float64, ordernum string) (err e
 		}
 		return err
 	}
-	ballSum := wtdh + balls
-	newBalance := balance - balls
-	quer := "UPDATE users SET wtdh='" + fmt.Sprint(ballSum) + "' WHERE token = '" + token + "';"
+	pointSum := wtdh + points
+	newBalance := balance - points
+	quer := "UPDATE users SET wtdh='" + fmt.Sprint(pointSum) + "' WHERE token = '" + token + "';"
 	_, err = db.Exec(quer)
 	if err != nil {
 		return err
@@ -498,10 +498,10 @@ func DataBaseUserSumBalance(token string, balls float64, ordernum string) (err e
 	if err != nil {
 		return err
 	}
-	quer = "UPDATE orders SET sumbals='" + fmt.Sprint(balls) + "' WHERE token = '" + token + "';"
+	quer = "UPDATE orders SET sumbals='" + fmt.Sprint(points) + "' WHERE token = '" + token + "';"
 
 	_, err = db.Exec(quer)
-	fmt.Println("ghjk ", balls, "UPDATE orders SET sumbals='"+fmt.Sprint(balls)+"' WHERE nmb = '"+ordernum+"';", err)
+	fmt.Println("ghjk ", points, "UPDATE orders SET sumbals='"+fmt.Sprint(points)+"' WHERE nmb = '"+ordernum+"';", err)
 	if err != nil {
 		return err
 	}
@@ -698,7 +698,7 @@ func DataBaseOrdersDropBalance(token string) (answ flw.DrawAnswList, err error) 
 	return answ, nil
 }
 
-func DataBaseOrdersBalls(orderNumber string, token string) (answ flw.WithAnsw, err error) {
+func DataBaseOrdersPoints(orderNumber string, token string) (answ flw.WithAnsw, err error) {
 	var db *sql.DB
 	dbName, dbms, err := DataBaseSelfConfigGet()
 	if err != nil {
