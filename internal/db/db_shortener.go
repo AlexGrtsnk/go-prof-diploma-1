@@ -678,7 +678,7 @@ func DataBaseOrdersDropBalance(token string) (answ flw.DrawAnswList, err error) 
 	if accuralSum == 0 {
 		return nil, sql.ErrNoRows
 	}
-	fmt.Println("drpansw3 ", answ[0].Order, answ[0].ProccessedAt, answ[0].Sum, token)
+	fmt.Println("drpansw3 ", answ, token)
 	return answ, nil
 }
 
