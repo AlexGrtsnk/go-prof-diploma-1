@@ -164,7 +164,8 @@ func authentificateUserPage(w http.ResponseWriter, r *http.Request) {
 		cksTmp := cks.SetCookieHandler(w, r, token)
 		http.SetCookie(w, cksTmp)
 		w.WriteHeader(http.StatusOK)
-		fmt.Println("webt good", flag, token, cksTmp.Value, cksTmp.Name, cksTmp.Path)
+		fmt.Println("webt good", flag, token, cksTmp.Value, cksTmp.Name, cksTmp.Path, ath.Login, ath.Password)
+		r.Header.Add("Authorization", token)
 
 	}
 
