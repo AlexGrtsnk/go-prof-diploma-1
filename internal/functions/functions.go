@@ -143,6 +143,7 @@ func authentificateUserPage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		flag, token, err := db.DataBaseCheckUserExistance(ath.Login, ath.Password)
+		//cks.SetCookieHandler(w, r, token)
 		if err != nil {
 			w.WriteHeader(http.StatusServiceUnavailable)
 			_, err = io.WriteString(w, "Error on the side")
@@ -153,13 +154,12 @@ func authentificateUserPage(w http.ResponseWriter, r *http.Request) {
 		}
 		if flag == 0 {
 			w.WriteHeader(http.StatusBadRequest)
-			http.SetCookie(w, nil)
-		} else {
-			cks.SetCookieHandler(w, r, token)
-			//http.SetCookie(w, cks_tmp)
-			w.WriteHeader(http.StatusOK)
-			fmt.Println("webt good")
+			//http.SetCookie(w, nil)
 		}
+		cksTmp := cks.SetCookieHandler(w, r, token)
+		http.SetCookie(w, cksTmp)
+		w.WriteHeader(http.StatusOK)
+		fmt.Println("webt good", flag)
 
 	}
 
