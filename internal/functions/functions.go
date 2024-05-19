@@ -171,6 +171,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 
 		token, err := cks.GetCookieHandler(w, r)
 		if err != nil {
+			fmt.Println("help me please")
 			w.WriteHeader(http.StatusUnauthorized)
 			_, err = io.WriteString(w, "Error on the side")
 			if err != nil {
