@@ -490,6 +490,12 @@ func DataBaseUserSumBalance(token string, balls float64, ordernum string) (err e
 	if err != nil {
 		return err
 	}
+
+	quer = `INSERT INTO orders(nmb, sts, token) VALUES ('` + string(ordernum) + `', '` + string("PROCESSED") + `', '` + token + `')`
+	_, err = db.Exec(quer)
+	if err != nil {
+		return err
+	}
 	quer = "UPDATE orders SET sumbals='" + fmt.Sprint(balls) + "' WHERE token = '" + token + "';"
 
 	_, err = db.Exec(quer)
