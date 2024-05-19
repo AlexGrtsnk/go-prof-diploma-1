@@ -53,25 +53,26 @@ func registrateNewUserPage(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		reader, err := gzp.GzipFormatHandlerJSON(w, r)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+			w.WriteHeader(http.StatusInternalServerError)
 			_, err = io.WriteString(w, "Error on the side")
 			if err != nil {
 				log.Fatal(err)
 			}
+			return
 		}
-		//_, err = cks.GetCookieHandler(w, r)
 		err = sql.ErrNoRows
-		var tmp string
+		var tokenTmp string
 		if err != nil {
 			token, err := ath.BuildJWTString()
 			if err != nil {
-				w.WriteHeader(http.StatusBadRequest)
+				w.WriteHeader(http.StatusInternalServerError)
 				_, err = io.WriteString(w, "Error on the side")
 				if err != nil {
 					log.Fatal(err)
 				}
+				return
 			}
-			tmp = token
+			tokenTmp = token
 		} else {
 			fmt.Println("MAYBE")
 		}
@@ -81,18 +82,18 @@ func registrateNewUserPage(w http.ResponseWriter, r *http.Request) {
 		var buf bytes.Buffer
 		_, err = buf.ReadFrom(reader)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		if err = json.Unmarshal(buf.Bytes(), &ath); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		fmt.Println("we are here3")
 		flag, _, err := db.DataBaseCheckUserExistance(ath.Login, ath.Password)
 		fmt.Println("we are here4", flag)
 		if err != nil {
-			w.WriteHeader(http.StatusServiceUnavailable)
+			w.WriteHeader(http.StatusInternalServerError)
 			_, err = io.WriteString(w, "Error on the side")
 			if err != nil {
 				log.Fatal(err)
@@ -101,13 +102,12 @@ func registrateNewUserPage(w http.ResponseWriter, r *http.Request) {
 		}
 		if flag == 1 {
 			w.WriteHeader(http.StatusConflict)
-			//http.SetCookie(w, nil)
 		} else {
-			err = db.DataBasePostUser(ath.Login, ath.Password, tmp)
-			qwe := cks.SetCookieHandler(w, r, tmp)
+			err = db.DataBasePostUser(ath.Login, ath.Password, tokenTmp)
+			qwe := cks.SetCookieHandler(w, r, tokenTmp)
 			http.SetCookie(w, qwe)
 			if err != nil {
-				w.WriteHeader(http.StatusServiceUnavailable)
+				w.WriteHeader(http.StatusInternalServerError)
 				_, err = io.WriteString(w, "Error on the side")
 				if err != nil {
 					log.Fatal(err)
