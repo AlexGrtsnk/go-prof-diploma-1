@@ -82,7 +82,7 @@ func registrateNewUserPage(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		fmt.Println("we are here1")
-		//http.SetCookie(w, cookiesTmp)
+		http.SetCookie(w, cookiesTmp)
 		fmt.Println("we are here2")
 		var ath flw.Auth
 		var buf bytes.Buffer
@@ -96,7 +96,7 @@ func registrateNewUserPage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		fmt.Println("we are here3")
-		flag, toknm, err := db.DataBaseCheckUserExistance(ath.Login, ath.Password)
+		flag, _, err := db.DataBaseCheckUserExistance(ath.Login, ath.Password)
 		fmt.Println("we are here4", flag)
 		if err != nil {
 			w.WriteHeader(http.StatusServiceUnavailable)
@@ -108,7 +108,6 @@ func registrateNewUserPage(w http.ResponseWriter, r *http.Request) {
 		}
 		if flag == 1 {
 			w.WriteHeader(http.StatusConflict)
-			_ = cks.SetCookieHandler(w, r, toknm)
 			//http.SetCookie(w, nil)
 		} else {
 			err = db.DataBasePostUser(ath.Login, ath.Password, cookiesTmp.Value)
