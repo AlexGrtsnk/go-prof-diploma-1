@@ -272,7 +272,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 				return
 				//log.Fatal(err)
 			}
-			_ = db.DataBaseOrdersAllBalance(token, "PROCESSED", 729.98, "12345678")
+			_ = db.DataBaseOrdersAllBalance(token, data.Status, data.Accrual, data.Order)
 			fmt.Println("trewq4 ", data)
 			/*
 				var ques flw.WithAnsw
