@@ -253,13 +253,14 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("sdfg ", APIAddres[len(APIAddres)-4:])
 			res, err := http.Get(APIAddres + "/api/orders/" + orderNumber)
 			fmt.Println("trewq1")
+			defer res.Body.Close()
 			if err != nil {
 				fmt.Println("hmppol", err)
 				return
-				log.Fatal(err)
+				//log.Fatal(err)
 			}
 			fmt.Println("trewq2")
-			defer res.Body.Close()
+			//defer res.Body.Close()
 			//decoder := json.NewDecoder(res.Body)
 			data := new(flw.WithAnsw)
 			err = json.NewDecoder(res.Body).Decode(data)
