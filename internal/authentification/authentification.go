@@ -2,6 +2,7 @@ package authentification
 
 import (
 	"fmt"
+	"math/rand"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -38,6 +39,16 @@ func GetUserID(tokenString string) int {
 	fmt.Println("Token is valid")
 	return claims.UserID
 }
+func generateShortKey() string {
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	const keyLength = 6
+
+	shortKey := make([]byte, keyLength)
+	for i := range shortKey {
+		shortKey[i] = charset[rand.Intn(len(charset))]
+	}
+	return string(shortKey)
+}
 
 // BuildJWTString создаёт токен и возвращает его в виде строки.
 func BuildJWTString() (string, error) {
@@ -56,7 +67,7 @@ func BuildJWTString() (string, error) {
 	if err != nil {
 		return "", err
 	}
-
+	mytoken := generateShortKey()
 	// возвращаем строку токена
-	return tokenString, nil
+	return tokenString + mytoken, nil
 }
