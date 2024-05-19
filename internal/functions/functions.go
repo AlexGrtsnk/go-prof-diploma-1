@@ -241,7 +241,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 				}
 				defer resp.Body.Close()
 			*/
-			res, err := http.Get("http://localhost:32895/api/orders/" + orderNumber)
+			res, err := http.Get("http://localhost:34569/api/orders/" + orderNumber)
 			fmt.Println("trewq1")
 			if err != nil {
 				fmt.Println("hmppol", err)
