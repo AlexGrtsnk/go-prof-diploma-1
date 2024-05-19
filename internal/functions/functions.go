@@ -178,7 +178,7 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
-		fmt.Println("want smth", token)
+		fmt.Println("want smth", token[:10])
 		flag, err := db.DataBaseCheckAuth(token)
 		fmt.Println("want smth", flag, err)
 		if err != nil {
