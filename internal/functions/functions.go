@@ -594,17 +594,17 @@ func GetAllOrdersBalanceDropPage(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	answBatch, err := db.DataBaseOrdersDropBalance(token)
-	fmt.Println("drpansw12 ", answBatch[0].Order, answBatch[0].ProccessedAt, answBatch[0].Sum)
+	drawAnswList, err := db.DataBaseOrdersDropBalance(token)
+	//fmt.Println("drpansw12 ", answBatch[0].Order, answBatch[0].ProccessedAt, answBatch[0].Sum)
 	if err == sql.ErrNoRows {
 		w.WriteHeader(http.StatusNoContent)
 		return
 	}
-	//var tmp flw.DrawAnswList
-	//tmp = append(tmp, answBatch[len(answBatch)-1])
+	var tmpDrawAnswList flw.DrawAnswList
+	tmpDrawAnswList = append(tmpDrawAnswList, drawAnswList[len(drawAnswList)-1])
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	if err = json.NewEncoder(w).Encode(answBatch[len(answBatch)-1]); err != nil {
+	if err = json.NewEncoder(w).Encode(tmpDrawAnswList); err != nil {
 		log.Panic(err)
 	}
 	//fmt.Println("MUST DONE", answBatch, answBatch[0], tmp)
