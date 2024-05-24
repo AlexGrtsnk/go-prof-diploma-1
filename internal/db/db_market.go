@@ -1,4 +1,4 @@
-package databaseshortener
+package databasemarket
 
 import (
 	"database/sql"

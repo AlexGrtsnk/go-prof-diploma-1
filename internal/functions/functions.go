@@ -47,6 +47,43 @@ func checksum(number int) int {
 	return luhn % 10
 }
 
+func accuralSystemGet(APIAddres string, accrual *float64, order *string, status *string, orderNumber string, flag *int) {
+	res, err := http.Get(APIAddres + "/api/orders/" + orderNumber)
+	if err != nil {
+		return
+	}
+	defer res.Body.Close()
+	dataTmp := new(flw.WithAnsw)
+	err = json.NewDecoder(res.Body).Decode(dataTmp)
+	if err != nil {
+		return
+	} else {
+		*accrual = dataTmp.Accrual
+		*order = dataTmp.Order
+		*status = dataTmp.Status
+		*flag = 1
+		return
+	}
+
+}
+
+func accuralSystemGetHandler(apiAddress string, orderNumber string) (accuralSystemAnswer flw.WithAnsw, flagg int) {
+	var accrual float64
+	var order, status string
+	flag := 0
+	for iterNum := 0; iterNum < 60; iterNum++ {
+		accuralSystemGet(apiAddress, &accrual, &order, &status, orderNumber, &flag)
+		if flag == 1 {
+			accuralSystemAnswer.Accrual = accrual
+			accuralSystemAnswer.Order = order
+			accuralSystemAnswer.Status = status
+			return accuralSystemAnswer, 1
+		}
+
+	}
+	return accuralSystemAnswer, 0
+}
+
 func registrateNewUserPage(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		reader, err := gzp.GzipFormatHandlerJSON(w, r)
@@ -172,7 +209,13 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
-		if flag == 0 {
+		const (
+			OrderWasUploadedByUnauthUser = iota
+			newOrderWasDuplicated
+			newOrderWasUploadedAnotherUser
+			newOrderWasAccepted
+		)
+		if flag == OrderWasUploadedByUnauthUser {
 			w.WriteHeader(http.StatusUnauthorized)
 			_, err = io.WriteString(w, "Error on the side")
 			if err != nil {
@@ -205,7 +248,15 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 			}
 			return
 		}
-		if flag == 3 {
+		if flag == newOrderWasDuplicated {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		if flag == newOrderWasUploadedAnotherUser {
+			w.WriteHeader(http.StatusConflict)
+			return
+		}
+		if flag == newOrderWasAccepted {
 			w.WriteHeader(http.StatusAccepted)
 			err = db.DataBasePostOrder(orderNumber, token)
 			if err != nil {
@@ -225,32 +276,8 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 				}
 				return
 			}
-			kol := 0
-			dataTmp := new(flw.WithAnsw)
-			for kol < 60 {
-				kol += 1
-				res, err := http.Get(APIAddres + "/api/orders/" + orderNumber)
-				if err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
-					_, err = io.WriteString(w, "Error on the side")
-					if err != nil {
-						log.Fatal(err)
-					}
-					return
-				}
-				defer res.Body.Close()
-				data := new(flw.WithAnsw)
-				err = json.NewDecoder(res.Body).Decode(data)
-				if err != nil {
-					continue
-				} else {
-					dataTmp.Accrual = data.Accrual
-					dataTmp.Order = data.Order
-					dataTmp.Status = data.Status
-					break
-				}
-			}
-			if kol < 60 {
+			dataTmp, flag := accuralSystemGetHandler(APIAddres, orderNumber)
+			if flag == 1 {
 				err = db.DataBaseOrdersAllBalance(token, dataTmp.Status, dataTmp.Accrual, dataTmp.Order)
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
@@ -261,15 +288,6 @@ func uploadNewOrderPage(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 			}
-			return
-		}
-
-		if flag == 1 {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-		if flag == 2 {
-			w.WriteHeader(http.StatusConflict)
 			return
 		}
 	}
